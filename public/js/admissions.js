@@ -5,7 +5,7 @@ let applications = [];
 let schoolSettings = {};
 async function call(url, options = {}) {
     const r = await App.api(url, options);
-    if (!r.ok) throw new Error(r.data.message || "অনুরোধটি সম্পন্ন হয়নি।");
+    if (!r.ok) throw new Error(r.data.message || "The request could not be completed.");
     return r.data;
 }
 function message(el, value, error = false) {
@@ -13,26 +13,26 @@ function message(el, value, error = false) {
     el.className = "text-sm " + (error ? "text-red-600" : "text-emerald-700");
 }
 function renderSummary(s) {
-    const items = [["মোট আবেদন",s.total||0,"bg-brand-50 text-brand-700"],["অপেক্ষমাণ",s.pending||0,"bg-amber-50 text-amber-700"],["পর্যালোচিত",s.reviewed||0,"bg-violet-50 text-violet-700"],["গৃহীত",s.accepted||0,"bg-emerald-50 text-emerald-700"],["বাতিল",s.rejected||0,"bg-red-50 text-red-700"]];
+    const items = [["Total Applications",s.total||0,"bg-brand-50 text-brand-700"],["Pending",s.pending||0,"bg-amber-50 text-amber-700"],["Reviewed",s.reviewed||0,"bg-violet-50 text-violet-700"],["Accepted",s.accepted||0,"bg-emerald-50 text-emerald-700"],["Rejected",s.rejected||0,"bg-red-50 text-red-700"]];
     $("#summary").innerHTML = items.map(([label,count,tone]) => '<article class="card flex items-center gap-3 !p-4"><div class="rounded-xl p-3 '+tone+'"><span class="text-xl font-bold">'+esc(count)+'</span></div><p class="text-sm font-semibold text-slate-600">'+label+'</p></article>').join("");
 }
 function renderRows() {
     const q = ($("#admissionSearch").value || "").trim().toLowerCase(), status = $("#statusFilter").value;
     const rows = applications.filter(a => (!q || [a.application_no,a.student_name,a.student_name_en,a.phone,a.class_name].join(" ").toLowerCase().includes(q)) && (!status || a.status === status));
     $("#admissionRows").innerHTML = rows.map(a => '<tr><td><b>'+esc(a.application_no)+'</b><span class="block text-xs text-slate-500">'+esc(a.student_name)+'</span></td><td>'+esc(a.class_name)+'<span class="block text-xs text-slate-500">'+esc(a.phone)+'</span></td><td><select class="input min-w-32" data-field="status">'+
-    ["Pending","Reviewed","Accepted","Rejected","Waiting List"].map(s=>'<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+({"Pending":"অপেক্ষমাণ","Reviewed":"পর্যালোচিত","Accepted":"অনুমোদিত","Rejected":"বাতিল","Waiting List":"অপেক্ষমাণ তালিকা"}[s])+'</option>').join("")+
+    ["Pending","Reviewed","Accepted","Rejected","Waiting List"].map(s=>'<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+({"Pending":"Pending","Reviewed":"Reviewed","Accepted":"Accepted","Rejected":"Rejected","Waiting List":"Pending তালিকা"}[s])+'</option>').join("")+
     '</select></td><td><select class="input min-w-32" data-field="payment_status">'+
-    ["Not Required","Pending","Verified","Rejected"].map(s=>'<option value="'+s+'" '+((a.payment_status||"Not Required")===s?'selected':'')+'>'+({"Not Required":"প্রযোজ্য নয়","Pending":"অপেক্ষমাণ","Verified":"যাচাইকৃত","Rejected":"বাতিল"}[s])+'</option>').join("")+
-    '</select></td><td><input class="input min-w-24" data-field="admit_roll" value="'+esc(a.admit_roll||"")+'" placeholder="রোল"></td><td><label class="flex items-center gap-2 text-sm"><input type="checkbox" data-field="admit_card_enabled" '+(a.admit_card_enabled?'checked':'')+'> চালু</label></td><td><input class="input min-w-36" data-field="admin_note" value="'+esc(a.admin_note||"")+'" placeholder="নোট"></td><td><button class="btn-primary btn-sm" data-save="'+esc(a.id)+'">সংরক্ষণ</button></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-print-application="'+esc(a.id)+'">আবেদন ফরম</button><button type="button" class="btn-secondary btn-sm" data-print-admit="'+esc(a.id)+'">এডমিট কার্ড</button></div></td></tr>').join("") || '<tr><td colspan="9" class="py-10 text-center text-slate-400">কোনো আবেদন পাওয়া যায়নি।</td></tr>';
+    ["Not Required","Pending","Verified","Rejected"].map(s=>'<option value="'+s+'" '+((a.payment_status||"Not Required")===s?'selected':'')+'>'+({"Not Required":"Not Required","Pending":"Pending","Verified":"Verified","Rejected":"Rejected"}[s])+'</option>').join("")+
+    '</select></td><td><input class="input min-w-24" data-field="admit_roll" value="'+esc(a.admit_roll||"")+'" placeholder="Roll No."></td><td><label class="flex items-center gap-2 text-sm"><input type="checkbox" data-field="admit_card_enabled" '+(a.admit_card_enabled?'checked':'')+'> Enabled</label></td><td><input class="input min-w-36" data-field="admin_note" value="'+esc(a.admin_note||"")+'" placeholder="Note"></td><td><button class="btn-primary btn-sm" data-save="'+esc(a.id)+'">Save</button></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-print-application="'+esc(a.id)+'">Application Form</button><button type="button" class="btn-secondary btn-sm" data-print-admit="'+esc(a.id)+'">Admit Card</button></div></td></tr>').join("") || '<tr><td colspan="9" class="py-10 text-center text-slate-400">No applications found.</td></tr>';
 }
 
 function printWindow(kind, markup) {
     const win = window.open("", "_blank");
-    if (!win) { message($("#pageMessage"), "প্রিন্ট উইন্ডো খুলতে পারেনি। ব্রাউজারের pop-up অনুমতি দিন।", true); return; }
+    if (!win) { message($("#pageMessage"), "Unable to open the print window. Please allow pop-ups in your browser.", true); return; }
     const containerId = kind === "application" ? "printSheet" : "admitPrint";
     const bodyClass = kind === "application" ? "printing-admission" : "printing-admit";
     win.document.open();
-    win.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admission Print</title><link rel="stylesheet" href="/css/admission.css?v=signature-bottom-20261123"></head><body class="'+bodyClass+'"><div id="'+containerId+'">'+markup+'</div></body></html>');
+    win.document.write('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admission Print</title><link rel="stylesheet" href="/css/admission.css?v=signature-bottom-20261123"></head><body class="'+bodyClass+'"><div id="'+containerId+'">'+markup+'</div></body></html>');
     win.document.close();
     let started = false;
     const run = () => {
@@ -55,12 +55,12 @@ function printApplication(a) {
     const fields = [
         pf(L("শিক্ষার্থীর নাম (বাংলা)","Student Name (Bangla)"),a.student_name,true),
         pf(L("শিক্ষার্থীর নাম (ইংরেজি)","Student Name (English)"),a.student_name_en,true),
-        pf(L("জন্মতারিখ","Date of Birth"),a.birth_date),pf(L("জন্ম নিবন্ধন নং","Birth Registration No."),a.birth_reg_no),
+        pf(L("জন্মতারিখ","Date of Birth"),a.birth_date),pf(L("জন্ম নিDisabledন নং","Birth Registration No."),a.birth_reg_no),
         pf(L("লিঙ্গ","Gender"),a.gender),pf(L("ধর্ম","Religion"),a.religion),
         pf(L("জাতীয়তা","Nationality"),a.nationality),pf(L("শাখা/বিভাগ","Section / Group"),a.group_name)
     ].join("");
     const markup = '<article class="print-page"><header class="print-head"><img class="print-logo" src="'+esc(schoolSettings.logo_url||"/6716-removebg-preview.png")+'" alt="School Logo"><div><h1>'+esc(name)+'</h1><p class="en">'+esc(nameEn)+'</p><p>'+esc(address)+(schoolSettings.phone?' · '+esc(schoolSettings.phone):'')+'</p><p>EIIN: '+esc(schoolSettings.eiin||"—")+'</p></div><div></div></header>'+
-        '<div class="print-title">'+L("ভর্তি আবেদন ফরম","ADMISSION APPLICATION FORM")+'</div>'+
+        '<div class="print-title">'+L("ভর্তি Application Form","ADMISSION APPLICATION FORM")+'</div>'+
         '<div class="print-meta"><span>'+L("ভর্তির শ্রেণি: ","Admission Class: ")+esc(a.class_name)+'</span><span>'+L("শিক্ষাবর্ষ: ","Academic Year: ")+esc(a.academic_year||"—")+'</span><span class="print-number">'+L("আবেদন নম্বর: ","Application No.: ")+esc(a.application_no)+'</span></div>'+
         '<div class="print-section">'+L("১. শিক্ষার্থীর তথ্য","1. STUDENT INFORMATION")+'</div><div class="print-grid"><div class="print-fields">'+fields+'</div><div class="photo-box">'+L("শিক্ষার্থীর পাসপোর্ট সাইজ ছবি","Student Passport Size Photo")+'</div></div>'+
         '<div class="print-section">'+L("২. পিতা-মাতা ও অভিভাবকের তথ্য","2. PARENTS’ & GUARDIAN INFORMATION")+'</div><div class="print-fields">'+
@@ -74,22 +74,27 @@ function printApplication(a) {
     printWindow("application",markup);
 }
 function printAdmitCard(a) {
-    const schoolName = schoolSettings.school_name || "শহীদ নূর হোসেন মেমোরিয়াল স্কুল";
+    const schoolName = schoolSettings.school_name_en || "Shaheed Nur Hossain Memorial School";
+    const address = schoolSettings.address_en || schoolSettings.address || "";
     const fields = [
-        ["শিক্ষার্থীর নাম",a.student_name],["আবেদন নম্বর",a.application_no],["ভর্তির শ্রেণি",a.class_name],
-        ["পরীক্ষার রোল",a.admit_roll||a.application_no],["শিক্ষাবর্ষ",a.academic_year],
-        ["পরীক্ষার তারিখ",schoolSettings.admission_exam_date],["সময়",schoolSettings.admission_exam_time],
-        ["পরীক্ষার কেন্দ্র",schoolSettings.admission_exam_center]
+        ["Student Name",a.student_name_en || a.student_name],
+        ["Application No.",a.application_no],
+        ["Admission Class",a.class_name],
+        ["Exam Roll",a.admit_roll || a.application_no],
+        ["Academic Year",a.academic_year],
+        ["Exam Date",schoolSettings.admission_exam_date ? new Date(schoolSettings.admission_exam_date + "T00:00:00").toLocaleDateString("en-GB") : ""],
+        ["Exam Time",schoolSettings.admission_exam_time],
+        ["Exam Center",schoolSettings.admission_exam_center_en || schoolSettings.admission_exam_center]
     ];
     const fieldMarkup = fields.map((item,i)=>'<div class="admit-field '+(i===0?'admit-field-primary':'')+'"><span>'+esc(item[0])+'</span><b>'+esc(item[1]||"—")+'</b></div>').join("");
     const markup = '<article class="admit-card"><div class="admit-accent"></div><header class="admit-head"><div class="admit-logo-wrap"><img src="'+esc(schoolSettings.logo_url||"/6716-removebg-preview.png")+'" alt="School logo"></div>'+
-        '<div class="admit-school"><p class="admit-kicker">ভর্তি পরীক্ষার প্রবেশপত্র</p><h2>'+esc(schoolName)+'</h2>'+
-        (schoolSettings.address?'<p class="admit-address">'+esc(schoolSettings.address)+'</p>':'')+
-        '<p class="admit-eiin">EIIN: '+esc(schoolSettings.eiin||"—")+'</p><h3>প্রবেশপত্র</h3></div>'+
+        '<div class="admit-school"><p class="admit-kicker">ADMISSION EXAMINATION</p><h2>'+esc(schoolName)+'</h2>'+
+        (address?'<p class="admit-address">'+esc(address)+'</p>':'')+
+        '<p class="admit-eiin">EIIN: '+esc(schoolSettings.eiin||"—")+'</p><h3>ADMIT CARD</h3></div>'+
         '<div class="admit-year">'+esc(a.academic_year||"")+'</div></header><div class="admit-meta"><span>ADMIT CARD</span><b>'+esc(a.admit_roll||a.application_no)+'</b></div>'+
         '<section class="admit-grid">'+fieldMarkup+'</section>'+
-        (schoolSettings.admission_exam_instructions?'<div class="admit-instructions"><strong>পরীক্ষার নির্দেশনা</strong><p>'+esc(schoolSettings.admission_exam_instructions)+'</p></div>':'')+
-        '<footer class="admit-signatures"><div class="admit-note">পরীক্ষার হলে এই প্রবেশপত্রটি সঙ্গে আনতে হবে।</div><div class="admit-signature"><span></span><b>পরীক্ষার্থীর স্বাক্ষর</b></div><div class="admit-signature"><span></span><b>কর্তৃপক্ষের স্বাক্ষর</b></div></footer></article>';
+        (schoolSettings.admission_exam_instructions_en || schoolSettings.admission_exam_instructions ? '<div class="admit-instructions"><strong>Exam Instructions</strong><p>'+esc(schoolSettings.admission_exam_instructions_en || schoolSettings.admission_exam_instructions)+'</p></div>':'')+
+        '<footer class="admit-signatures"><div class="admit-note">Please bring this admit card to the examination hall.</div><div class="admit-signature"><span></span><b>Candidate’s Signature</b></div><div class="admit-signature"><span></span><b>Authorized Signature</b></div></footer></article>';
     printWindow("admit",markup);
 }
 
@@ -111,9 +116,9 @@ $("#admissionSettings").addEventListener("submit", async e => {
     e.preventDefault();
     const form = e.currentTarget, data = Object.fromEntries(new FormData(form));
     try {
-        if (!Number.isFinite(Number(data.admission_fee)) || Number(data.admission_fee) < 0) throw new Error("সঠিক আবেদন ফি লিখুন।");
+        if (!Number.isFinite(Number(data.admission_fee)) || Number(data.admission_fee) < 0) throw new Error("Please enter a valid application fee.");
         const result = await call("/api/admin/website/settings",{method:"PUT",json:data});
-        message($("#settingsMessage"),result.message || "সেটিংস সংরক্ষণ হয়েছে।");
+        message($("#settingsMessage"),result.message || "সেটিংস Save হয়েছে।");
     } catch(err) { message($("#settingsMessage"),err.message,true); }
 });
 $("#admissionRows").addEventListener("click", async e => {
@@ -133,21 +138,21 @@ $("#admissionRows").addEventListener("click", async e => {
     if (!btn) return;
     const row = btn.closest("tr"), data = {};
     row.querySelectorAll("[data-field]").forEach(el => { data[el.dataset.field] = el.type === "checkbox" ? el.checked : el.value; });
-    btn.disabled = true; btn.textContent = "সংরক্ষণ হচ্ছে...";
+    btn.disabled = true; btn.textContent = "Save হচ্ছে...";
     try {
         await call("/api/admin/website/admissions/"+btn.dataset.save,{method:"PUT",json:data});
-        message($("#pageMessage"),"আবেদন ও এডমিট কার্ডের সেটিংস সংরক্ষণ হয়েছে।");
+        message($("#pageMessage"),"আবেদন ও Admit Cardের সেটিংস Save হয়েছে।");
         await refresh();
     } catch(err) { message($("#pageMessage"),err.message,true); }
-    finally { btn.disabled = false; btn.textContent = "সংরক্ষণ"; }
+    finally { btn.disabled = false; btn.textContent = "Save"; }
 });
 async function bulkAdmit(enabled) {
     const targets = applications.filter(a => a.status === "Accepted");
-    if (!targets.length) { message($("#pageMessage"),"এখনো কোনো অনুমোদিত আবেদন নেই।",true); return; }
-    if (!confirm(targets.length+" জন অনুমোদিত শিক্ষার্থীর এডমিট কার্ড "+(enabled?"চালু":"বন্ধ")+" করবেন?")) return;
+    if (!targets.length) { message($("#pageMessage"),"এখনো কোনো Accepted আবেদন নেই।",true); return; }
+    if (!confirm(targets.length+" জন Accepted শিক্ষার্থীর Admit Card "+(enabled?"Enabled":"Disabled")+" ?")) return;
     try {
         for (const a of targets) await call("/api/admin/website/admissions/"+a.id,{method:"PUT",json:{admit_card_enabled:enabled}});
-        message($("#pageMessage"),"অনুমোদিত শিক্ষার্থীদের এডমিট কার্ড "+(enabled?"চালু":"বন্ধ")+" করা হয়েছে।");
+        message($("#pageMessage"),"Accepted শিক্ষার্থীদের Admit Card "+(enabled?"Enabled":"Disabled")+" successfully updated.");
         await refresh();
     } catch(err) { message($("#pageMessage"),err.message,true); }
 }
