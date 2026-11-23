@@ -105,7 +105,7 @@ async function getExamReport(filters) {
     }
 
     let students = studentRows.map((s) => {
-        const list = byStudent.get(s.id) || [];
+        const list = (byStudent.get(s.id) || []).filter((row) => !notHeldIds.has(Number(row.subject_id)));
         const marks = {};
         const grades = {};
         let total = 0;
