@@ -195,10 +195,19 @@ router.post("/results/publish-bulk", requireAdminRole, async (req, res) => {
         }
 
         // PUBLISH: only results that have marks for every normal subject
+        const examRow = await client.query(
+            `SELECT id FROM exams WHERE class_name = $1 AND exam_name = $2 AND exam_year = $3 LIMIT 1`,
+            scopeParams
+        );
+        const examId = examRow.rows[0] && examRow.rows[0].id;
         const required = await client.query(
-            `SELECT COUNT(*)::int AS n FROM subjects
-             WHERE class_name = $1 AND COALESCE(subject_type, 'main') <> 'fourth'`,
-            [data.class_name]
+            `SELECT COUNT(*)::int AS n FROM subjects sub
+             WHERE sub.class_name = $1 AND COALESCE(sub.subject_type, 'main') <> 'fourth'
+               AND NOT EXISTS (
+                   SELECT 1 FROM exam_not_held_subjects nh
+                   WHERE nh.exam_id = $2 AND nh.subject_id = sub.id
+               )`,
+            [data.class_name, examId || 0]
         );
         const requiredMain = required.rows[0].n;
 
@@ -210,8 +219,12 @@ router.post("/results/publish-bulk", requireAdminRole, async (req, res) => {
                     SELECT COUNT(*) FROM results r
                     INNER JOIN subjects sub ON sub.id = r.subject_id
                     WHERE r.student_id = s.id AND COALESCE(sub.subject_type, 'main') <> 'fourth'
+                      AND NOT EXISTS (
+                          SELECT 1 FROM exam_not_held_subjects nh
+                          WHERE nh.exam_id = $5 AND nh.subject_id = sub.id
+                      )
                ) >= $4`,
-            [...scopeParams, requiredMain]
+            [...scopeParams, requiredMain, examId || 0]
         );
 
         const stillDraft = await client.query(
