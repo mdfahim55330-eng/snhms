@@ -38,7 +38,7 @@
 
     <section id="settings" class="card scroll-mt-20 space-y-5">
         <div>
-            <h2 class="card-title mb-1">Institution Details ও হোমPages</h2>
+            <h2 class="card-title mb-1">Institution Details & Homepage</h2>
             <p class="text-sm text-slate-500">Published হোমPagesে দেখানোর পরিচিতি, যোগাযোগ ও Photo সম্পাদনা করুন।</p>
         </div>
         <form id="settingsForm" class="space-y-5">
@@ -100,8 +100,8 @@
 
     <section id="menu-links" class="card scroll-mt-20 space-y-4">
         <div>
-            <h2 class="card-title mb-1">হোমPagesের তিন-ডট মেনু (⋮)</h2>
-            <p class="text-sm text-slate-500">ফলাফল, দৈনিক কার্যDisplay Order, অনলাইন ভর্তি বা অন্য Pagesের লিংক যোগ করুন।</p>
+            <h2 class="card-title mb-1">Homepage Three-Dot Menu (⋮)</h2>
+            <p class="text-sm text-slate-500">Add links to results, daily activities, online admission, or other pages.</p>
         </div>
         <form data-resource="menu" class="space-y-3">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -120,7 +120,7 @@
     </section>
 
     <section id="pages" class="card scroll-mt-20 space-y-4">
-        <h2 class="card-title mb-0">প্রতিষ্ঠান সম্পর্কিত Pages</h2>
+        <h2 class="card-title mb-0">Institution Pages</h2>
         <form data-resource="pages" class="space-y-3">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <label class="label">Slug<input class="input mt-1 normal-case tracking-normal" name="slug" placeholder="history" required></label>
@@ -134,14 +134,14 @@
             </div>
             <div class="flex flex-wrap items-center gap-5">
                 <label class="flex items-center gap-2 text-sm text-slate-600"><input class="h-4 w-4 rounded border-slate-300 text-brand-700 focus:ring-brand-500" type="checkbox" name="active" checked>Published</label>
-                <button type="submit" class="btn-primary btn-sm">Pages যোগ করুন</button>
+                <button type="submit" class="btn-primary btn-sm">Add Page</button>
             </div>
         </form>
         <div id="list-pages"></div>
     </section>
 
     <section id="notices" class="card scroll-mt-20 space-y-4">
-        <h2 class="card-title mb-0">Notices বোর্ড</h2>
+        <h2 class="card-title mb-0">Notice Board</h2>
         <form data-resource="notices" class="space-y-3">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label class="label">Title (Bangla)<input class="input mt-1 normal-case tracking-normal" name="title" required></label>
@@ -156,14 +156,14 @@
             </div>
             <div class="flex flex-wrap items-center gap-5">
                 <label class="flex items-center gap-2 text-sm text-slate-600"><input class="h-4 w-4 rounded border-slate-300 text-brand-700 focus:ring-brand-500" type="checkbox" name="published" checked>Publish</label>
-                <button type="submit" class="btn-primary btn-sm">Notices যোগ করুন</button>
+                <button type="submit" class="btn-primary btn-sm">Add Notice</button>
             </div>
         </form>
         <div id="list-notices"></div>
     </section>
 
     <section id="staff" class="card scroll-mt-20 space-y-4">
-        <h2 class="card-title mb-0">Staff-কর্মচারী</h2>
+        <h2 class="card-title mb-0">Faculty & Staff</h2>
         <form data-resource="staff" class="space-y-3">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label class="label">Name (Bangla)<input class="input mt-1 normal-case tracking-normal" name="name" required></label>
@@ -185,22 +185,22 @@
     </section>
 
     <section id="gallery" class="card scroll-mt-20 space-y-4">
-        <h2 class="card-title mb-0">ফটো Gallery</h2>
+        <h2 class="card-title mb-0">Photo Gallery</h2>
         <form data-resource="gallery" class="space-y-3">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <label class="label">Photoর Title (Bangla)<input class="input mt-1 normal-case tracking-normal" name="title" required></label>
+                <label class="label">Image Title (Bangla)<input class="input mt-1 normal-case tracking-normal" name="title" required></label>
                 <label class="label">Title (English)<input class="input mt-1 normal-case tracking-normal" name="title_en"></label>
                 <label class="label">Category<input class="input mt-1 normal-case tracking-normal" name="category"></label>
                 <label class="label">Category (English)<input class="input mt-1 normal-case tracking-normal" name="category_en"></label>
                 <label class="label">Photo<input class="input mt-1 normal-case tracking-normal" type="file" name="image_file" accept="image/*" required></label>
             </div>
-            <button type="submit" class="btn-primary btn-sm">Photo যোগ করুন</button>
+            <button type="submit" class="btn-primary btn-sm">Add Image</button>
         </form>
         <div id="list-gallery"></div>
     </section>
 
     <section id="routines" class="card scroll-mt-20 space-y-4">
-        <h2 class="card-title mb-0">ক্লাস Routines ও Exam Timeসূচি</h2>
+        <h2 class="card-title mb-0">Class Routine & Exam Schedule</h2>
         <form data-resource="routines" class="space-y-3">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label class="label">Title (Bangla)<input class="input mt-1 normal-case tracking-normal" name="title" required></label>
@@ -215,7 +215,7 @@
     </section>
 
     <section id="downloads" class="card scroll-mt-20 space-y-4">
-        <h2 class="card-title mb-0">সিলেবাস ও Study Materials</h2>
+        <h2 class="card-title mb-0">Syllabus & Study Materials</h2>
         <form data-resource="downloads" class="space-y-3">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <label class="label">Title (Bangla)<input class="input mt-1 normal-case tracking-normal" name="title" required></label>
@@ -232,7 +232,7 @@
     <section id="admissions" class="card scroll-mt-20 space-y-5">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="card-title mb-1">Admission Applicationsসমূহ</h2>
+                <h2 class="card-title mb-1">Admission Applications</h2>
                 <p class="text-sm text-slate-500">View application counts and statuses, or download the complete list in Excel format.</p>
             </div>
             <a class="btn-primary" href="/api/admin/website/admissions/export.xlsx">
