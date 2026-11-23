@@ -126,6 +126,11 @@ async function getExamReport(filters) {
             }
         }
 
+        for (const subjectId of notHeldIds) {
+            marks[subjectId] = "N/A";
+            grades[subjectId] = "N/A";
+        }
+
         // GPA is recalculated from the saved subject marks, so the merit list can never
         // disagree with the marksheet, even if an old stored value was out of date.
         const final = calculateFinalGPA(list);
