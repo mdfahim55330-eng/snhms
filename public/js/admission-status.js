@@ -44,14 +44,17 @@ form.addEventListener("submit",async e=>{
 });
 async function printCard(a,x){
  const en=language==="en",schoolName=en?(school.school_name_en||"Shaheed Nur Hossain Memorial School"):(school.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল");
- const logo=school.logo_url||"/6716-removebg-preview.png";
+ const logo="/6716-removebg-preview.png?v=20261123";
  const fields=[[t("student"),a.student_name],[t("application"),a.application_no],[t("class"),a.class_name],[t("examRoll"),a.admit_roll||a.application_no],[t("year"),a.academic_year],[t("date"),x.exam_date],[t("time"),x.exam_time],[t("center"),x.center]];
  print.innerHTML='<article class="admit-card '+(en?'admit-en':'')+'"><header class="admit-head"><img src="'+esc(logo)+'" alt="Logo" onerror="this.src=\'/6716-removebg-preview.png\'"><div><h2>'+esc(schoolName)+'</h2><p>'+esc(school.address||"")+'</p><h3>'+t("examTitle")+'</h3></div></header><div class="admit-grid">'+fields.map(([k,v])=>'<div class="admit-field"><span>'+esc(k)+'</span><b>'+esc(v||"—")+'</b></div>').join("")+'</div>'+(x.instructions?'<div class="admit-instructions"><b>'+t("instructions")+':</b> '+esc(x.instructions)+'</div>':'')+'<footer>'+t("signature")+': __________________________</footer></article>';
  print.hidden=false;
  document.body.classList.add("printing-admit");
  try { if(document.fonts && document.fonts.ready) await document.fonts.ready; } catch(_) {}
  const images=Array.from(print.querySelectorAll("img"));
- await Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;})));
+ await Promise.all(images.map(img=>{
+   img.src="/6716-removebg-preview.png?v=20261123";img.loading="eager";img.decoding="sync";
+   return img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;});
+ }));
  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
  window.addEventListener("afterprint",()=>document.body.classList.remove("printing-admit"),{once:true});
  window.print();
