@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ভর্তি আবেদন ও এডমিট কার্ড ব্যবস্থাপনা</title>
+<link rel="icon" href="/6716-removebg-preview.png?v=3">
+<link rel="stylesheet" href="/css/app.css?v=admissions-admin-1">
+</head>
+<body>
+<main id="main" data-title="Admission Management" class="hidden space-y-6">
+<section class="rounded-2xl bg-gradient-to-r from-brand-900 to-brand-600 p-6 text-white shadow-soft sm:p-8">
+<div class="flex flex-wrap items-center justify-between gap-4"><div>
+<p class="text-xs font-bold uppercase tracking-[.18em] text-brand-100">প্রতিষ্ঠান পরিচালনা</p>
+<h2 class="mt-2 text-2xl font-bold sm:text-3xl">ভর্তি আবেদন ও এডমিট কার্ড ব্যবস্থাপনা</h2>
+<p class="mt-2 max-w-2xl text-sm text-brand-100">আবেদন ফি, ভর্তি পরীক্ষার তথ্য, আবেদন অনুমোদন, পেমেন্ট যাচাই এবং এডমিট কার্ড এক জায়গা থেকে নিয়ন্ত্রণ করুন।</p>
+</div><a href="/pages/website.html" class="btn border border-white/30 bg-white/10 text-white hover:bg-white/20">ওয়েবসাইট পরিচালনা</a></div>
+</section>
+<section id="summary" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5" aria-live="polite"></section>
+<section class="card space-y-5">
+<div><h2 class="card-title">ভর্তি আবেদন ও পরীক্ষার সেটিংস</h2><p class="text-sm text-slate-500">আবেদন ফি ০ রাখলে আবেদন সম্পূর্ণ ফ্রি হবে এবং এডমিট কার্ডের জন্য পেমেন্ট লাগবে না।</p></div>
+<form id="admissionSettings" class="space-y-4">
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+<label class="label">আবেদন ফি (টাকা; ফ্রি করতে ০ দিন)<input class="input mt-1" type="number" min="0" step="0.01" name="admission_fee" value="0" required></label>
+<label class="label">ভর্তি পরীক্ষার তারিখ<input class="input mt-1" type="date" name="admission_exam_date"></label>
+<label class="label">পরীক্ষার সময়<input class="input mt-1" name="admission_exam_time" placeholder="সকাল ১০:০০"></label>
+<label class="label">পরীক্ষার কেন্দ্র<input class="input mt-1" name="admission_exam_center"></label>
+<label class="label">বিকাশ নম্বর (ঐচ্ছিক)<input class="input mt-1" name="admission_bkash"></label>
+<label class="label">নগদ নম্বর (ঐচ্ছিক)<input class="input mt-1" name="admission_nagad"></label>
+<label class="label">রকেট নম্বর (ঐচ্ছিক)<input class="input mt-1" name="admission_rocket"></label>
+<label class="label">অনলাইন পেমেন্ট চালু<select class="input mt-1" name="admission_online_payment"><option value="false">বন্ধ</option><option value="true">চালু</option></select></label>
+<label class="label">স্কুলে ফি জমা চালু<select class="input mt-1" name="admission_school_payment"><option value="false">বন্ধ</option><option value="true">চালু</option></select></label>
+</div>
+<label class="label">পেমেন্ট নির্দেশনা<textarea class="input mt-1 min-h-20" name="admission_payment_note"></textarea></label>
+<label class="label">ভর্তি পরীক্ষার নির্দেশনা<textarea class="input mt-1 min-h-24" name="admission_exam_instructions"></textarea></label>
+<div class="flex flex-wrap items-center gap-3"><button class="btn-primary" type="submit">সেটিংস সংরক্ষণ</button><span id="settingsMessage" class="text-sm text-slate-500" role="status"></span></div>
+</form></section>
+<section class="card space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">এডমিট কার্ড নিয়ন্ত্রণ</h2><p class="text-sm text-slate-500">শুধু Accepted আবেদনকারীরা এডমিট কার্ড পাবে। প্রত্যেক শিক্ষার্থীর জন্য আলাদাভাবে চালু/বন্ধ করা যাবে।</p></div>
+<div class="flex flex-wrap gap-2"><button type="button" id="enableAll" class="btn-secondary btn-sm">সব অনুমোদিত এডমিট চালু</button><button type="button" id="disableAll" class="btn-secondary btn-sm">সব এডমিট বন্ধ</button></div></div>
+<p class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">ফি ০ হলে পেমেন্ট যাচাই ছাড়াই Accepted এবং Admit Card ON থাকা শিক্ষার্থী এডমিট কার্ড প্রিন্ট করতে পারবে।</p>
+</section>
+<section class="card space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">ভর্তি আবেদনসমূহ</h2><p class="text-sm text-slate-500">আবেদন অনুমোদন, পেমেন্ট অবস্থা, এডমিট রোল এবং এডমিট কার্ড নিয়ন্ত্রণ করুন।</p></div><a class="btn-primary" href="/api/admin/website/admissions/export.xlsx">Excel ডাউনলোড</a></div>
+<div class="flex flex-wrap gap-3"><input id="admissionSearch" class="input min-w-56 flex-1" placeholder="নাম, আবেদন নম্বর, ফোন বা শ্রেণি দিয়ে খুঁজুন">
+<select id="statusFilter" class="input w-full sm:w-48"><option value="">সব আবেদন</option><option>Pending</option><option>Reviewed</option><option>Accepted</option><option>Rejected</option><option>Waiting List</option></select>
+<button type="button" id="refreshAdmissions" class="btn-secondary">রিফ্রেশ</button></div>
+<div class="table-wrap"><table class="table min-w-[1050px]"><thead><tr><th>আবেদন নং / শিক্ষার্থী</th><th>শ্রেণি / ফোন</th><th>আবেদনের অবস্থা</th><th>পেমেন্ট</th><th>Admit Roll</th><th>এডমিট কার্ড</th><th>অ্যাডমিন নোট</th><th>সংরক্ষণ</th></tr></thead>
+<tbody id="admissionRows"><tr><td colspan="8" class="py-8 text-center text-slate-400">লোড হচ্ছে...</td></tr></tbody></table></div>
+<p id="pageMessage" class="text-sm" role="status"></p>
+</section>
+</main>
+<script src="/js/app.js?v=admissions-admin-1"></script><script src="/js/admissions.js?v=admissions-admin-1"></script>
+</body></html>
