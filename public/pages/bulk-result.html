@@ -16,7 +16,7 @@
                 <label class="label" for="exam">Exam</label>
                 <select id="exam" class="input"><option value="">Select exam</option></select>
                 <button id="template" type="button" class="btn-secondary btn-sm mt-3" disabled>Download Excel template</button>
-                <p class="mt-2 text-xs text-slate-400">The template has one column for every subject of the class.</p>
+                <p class="mt-2 text-xs text-slate-500">The template has one column for every subject of the class. If a subject exam was not held, enter <strong>N/A</strong> in that subject column for every student. Do not leave it blank. The website will exclude that subject from totals and GPA.</p>
             </div>
             <div class="lg:col-span-2">
                 <label class="label" for="file">Excel file (.xlsx)</label>
@@ -101,7 +101,9 @@
         $check.textContent = "Check the file"; ready();
         if (!r.ok) return App.toast(r.data.message || "Could not read the file.", "error");
         const c = r.data.counts;
-        App.$("#chips").innerHTML = chip(c.total + " rows", "badge-gray") + chip(c.new + " new", "badge-green") +
+        App.$("#chips").innerHTML = chip(c.total + " rows", "badge-gray") +
+            (r.data.not_held_subjects && r.data.not_held_subjects.length ? chip("Not held: " + r.data.not_held_subjects.join(", ") + " (N/A)", "badge-blue") : "") +
+            chip(c.new + " new", "badge-green") +
             (c.update ? chip(c.update + " will be replaced", "badge-blue") : "") + (c.skipped ? chip(c.skipped + " already exist (skipped)", "badge-amber") : "") +
             (c.invalid ? chip(c.invalid + " with problems", "badge-red") : "");
         App.$("#preview-rows").innerHTML = r.data.analysis.map(function (x) {
@@ -124,7 +126,9 @@
         const d = r.data, box = App.$("#done");
         box.innerHTML = '<h3 class="card-title">Import finished</h3><div class="flex flex-wrap gap-2">' +
             chip(d.processed + " saved", "badge-green") + (d.updated ? chip(d.updated + " replaced", "badge-blue") : "") +
-            (d.failed ? chip(d.failed + " not imported", "badge-red") : "") + chip(d.published ? "Published" : "Draft", d.published ? "badge-green" : "badge-amber") + "</div>" +
+            (d.failed ? chip(d.failed + " not imported", "badge-red") : "") +
+            (d.not_held_subjects && d.not_held_subjects.length ? chip("Excluded subjects: " + d.not_held_subjects.join(", "), "badge-blue") : "") +
+            chip(d.published ? "Published" : "Draft", d.published ? "badge-green" : "badge-amber") + "</div>" +
             (d.errors.length ? '<div class="table-wrap mt-4 max-h-80 overflow-y-auto"><table class="table"><thead><tr><th>Row</th><th>Name</th><th>Roll</th><th>Problem</th></tr></thead><tbody>' +
                 d.errors.map(function (e) { return "<tr><td>" + e.row + "</td><td>" + App.esc(e.name) + "</td><td>" + App.esc(e.roll) + '</td><td class="text-xs text-red-600">' + App.esc(e.error) + "</td></tr>"; }).join("") + "</tbody></table></div>" : "") +
             '<p class="mt-4"><a class="btn-primary" href="/pages/result-list.html">View results</a></p>';
