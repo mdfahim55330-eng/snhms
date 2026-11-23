@@ -95,3 +95,34 @@
     max-width:22mm!important; object-fit:contain!important;
   }
 }
+
+
+/* Desktop + mobile: print card is temporarily moved to BODY by JS. */
+@media print {
+  html, body { background:#fff!important; }
+  body.printing-admit > * { display:none!important; }
+  body.printing-admit > #admitPrint {
+    display:block!important; visibility:visible!important; opacity:1!important;
+    position:static!important; width:100%!important; max-width:none!important;
+    margin:0!important; padding:0!important; overflow:visible!important;
+  }
+  body.printing-admit > #admitPrint .admit-card {
+    display:block!important; visibility:visible!important; opacity:1!important;
+    box-sizing:border-box!important; width:100%!important; height:135mm!important;
+    margin:0!important; padding:7mm 8mm!important;
+    border:2px solid #183f58!important; background:#fff!important;
+    color:#172b38!important; box-shadow:none!important;
+    break-inside:avoid!important; page-break-inside:avoid!important;
+    page-break-after:avoid!important;
+  }
+  body.printing-admit > #admitPrint .admit-head,
+  body.printing-admit > #admitPrint .admit-grid,
+  body.printing-admit > #admitPrint .admit-field,
+  body.printing-admit > #admitPrint .admit-card footer {
+    display:grid!important; visibility:visible!important;
+  }
+  body.printing-admit > #admitPrint .admit-head img {
+    display:block!important; visibility:visible!important; opacity:1!important;
+    width:22mm!important; height:22mm!important; object-fit:contain!important;
+  }
+}
