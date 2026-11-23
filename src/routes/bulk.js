@@ -1,154 +1,195 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Excel Import</title>
-    <link rel="icon" href="/6716-removebg-preview.png?v=3">
-    <link rel="stylesheet" href="/css/app.css">
-</head>
-<body>
-<main id="main" data-title="Import Results from Excel" class="hidden space-y-6">
-    <section class="card">
-        <h3 class="card-title">1. Choose the exam and the file</h3>
-        <div class="grid gap-4 lg:grid-cols-3">
-            <div class="lg:col-span-1">
-                <label class="label" for="exam">Exam</label>
-                <select id="exam" class="input"><option value="">Select exam</option></select>
-                <button id="template" type="button" class="btn-secondary btn-sm mt-3" disabled>Download Excel template</button>
-                <p class="mt-2 text-xs text-slate-400">The template has one column for every subject of the class.</p>
-            </div>
-            <div class="lg:col-span-2">
-                <label class="label" for="file">Excel file (.xlsx)</label>
-                <label for="file" id="drop" class="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center transition hover:border-brand-400 hover:bg-brand-50">
-                    <span class="text-brand-700" id="up-icon"></span>
-                    <span id="file-name" class="mt-2 text-sm font-semibold text-slate-700">Click to choose a file, or drop it here</span>
-                    <span class="text-xs text-slate-400">Only the first sheet is read. Maximum 5 MB.</span>
-                </label>
-                <input id="file" type="file" accept=".xlsx" class="sr-only">
-            </div>
-        </div>
-    </section>
+"use strict";
 
-    <section class="card">
-        <h3 class="card-title">2. Options</h3>
-        <div class="grid gap-4 sm:grid-cols-2">
-            <div>
-                <label class="label" for="mode">If a roll already exists</label>
-                <select id="mode" class="input">
-                    <option value="skip">Skip it (keep the saved result)</option>
-                    <option value="update">Replace it with the Excel data</option>
-                </select>
-            </div>
-            <div id="publish-box">
-                <label class="label" for="publish">After importing</label>
-                <select id="publish" class="input">
-                    <option value="true">Publish immediately</option>
-                    <option value="false">Save as draft (publish later)</option>
-                </select>
-            </div>
-        </div>
-        <div class="mt-5 flex flex-wrap gap-3">
-            <button id="check" type="button" class="btn-secondary" disabled>Check the file</button>
-            <button id="import" type="button" class="btn-primary" disabled>Import results</button>
-        </div>
-    </section>
+const express = require("express");
+const multer = require("multer");
+const db = require("../db");
+const config = require("../config");
+const audit = require("../services/audit");
+const { requireAdminRole } = require("../middleware/auth");
+const { httpError } = require("../utils");
+const { gradeSubjects } = require("../services/grading");
+const excel = require("../services/excel");
+const { insertStudentWithResults, replaceResults } = require("../services/results");
 
-    <section id="preview" class="card hidden">
-        <h3 class="card-title">Check result</h3>
-        <div id="chips" class="mb-4 flex flex-wrap gap-2"></div>
-        <div class="table-wrap max-h-[28rem] overflow-y-auto">
-            <table class="table">
-                <thead class="sticky top-0"><tr><th>Row</th><th>Name</th><th>Roll</th><th>Status</th><th>GPA</th><th>Problem</th></tr></thead>
-                <tbody id="preview-rows"></tbody>
-            </table>
-        </div>
-    </section>
+const router = express.Router();
 
-    <section id="done" class="card hidden"></section>
-</main>
-
-<script src="/js/app.js?v=admissions-menu-fix-20261123"></script>
-<script>
-    let file = null, isAdmin = false;
-    const $exam = App.$("#exam"), $check = App.$("#check"), $import = App.$("#import"), $tpl = App.$("#template");
-    App.$("#up-icon").innerHTML = App.icon("upload", "h-8 w-8");
-
-    function ready() {
-        const ok = !!($exam.value && file);
-        $check.disabled = !ok; $import.disabled = !ok;
-        $tpl.disabled = !$exam.value;
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: config.upload.maxBytes, files: 1 },
+    fileFilter: (req, file, cb) => {
+        if (!/\.xlsx$/i.test(file.originalname || "")) {
+            return cb(httpError(400, "Please upload an Excel (.xlsx) file."));
+        }
+        cb(null, true);
     }
-    function setFile(f) {
-        file = f;
-        App.$("#file-name").textContent = f ? f.name + " (" + Math.round(f.size / 1024) + " KB)" : "Click to choose a file, or drop it here";
-        App.$("#preview").classList.add("hidden"); App.$("#done").classList.add("hidden");
-        ready();
-    }
-    function formData() {
-        const fd = new FormData();
-        fd.append("exam_id", $exam.value);
-        fd.append("duplicate_mode", App.$("#mode").value);
-        fd.append("publish", App.$("#publish").value);
-        fd.append("excelFile", file);
-        return fd;
-    }
-    function chip(text, cls) { return '<span class="' + cls + '">' + text + "</span>"; }
+});
 
-    async function check() {
-        $check.disabled = true; $check.textContent = "Checking...";
-        const r = await App.api("/api/admin/bulk-preview", { method: "POST", form: formData() });
-        $check.textContent = "Check the file"; ready();
-        if (!r.ok) return App.toast(r.data.message || "Could not read the file.", "error");
-        const c = r.data.counts;
-        App.$("#chips").innerHTML = chip(c.total + " rows", "badge-gray") + chip(c.new + " new", "badge-green") +
-            (c.update ? chip(c.update + " will be replaced", "badge-blue") : "") + (c.skipped ? chip(c.skipped + " already exist (skipped)", "badge-amber") : "") +
-            (c.invalid ? chip(c.invalid + " with problems", "badge-red") : "");
-        App.$("#preview-rows").innerHTML = r.data.analysis.map(function (x) {
-            let status;
-            if (!x.valid) status = x.state === "skip" ? '<span class="badge-amber">Skipped</span>' : '<span class="badge-red">Problem</span>';
-            else status = x.state === "update" ? '<span class="badge-blue">Replace</span>' : '<span class="badge-green">New</span>';
-            return "<tr><td>" + x.row + '</td><td class="font-medium text-slate-900">' + App.esc(x.name) + "</td><td>" + App.esc(x.roll) + "</td><td>" + status + "</td><td>" +
-                (x.gpa === null ? "-" : App.fmtGpa(x.gpa) + " " + App.resultBadge(x.result)) + '</td><td class="text-xs text-red-600">' + App.esc(x.errors.join(" ")) + "</td></tr>";
-        }).join("");
-        App.$("#preview").classList.remove("hidden");
-        App.$("#done").classList.add("hidden");
+async function loadExamContext(examId) {
+    const exam = await db.one(`SELECT * FROM exams WHERE id = ?`, [examId]);
+    if (!exam) throw httpError(404, "Exam not found.");
+
+    const subjects = await db.all(`SELECT * FROM subjects WHERE class_name = ? ORDER BY id ASC`, [exam.class_name]);
+    if (subjects.length === 0) throw httpError(400, `No subjects found for class ${exam.class_name}.`);
+
+    const students = await db.all(
+        `SELECT id, roll, status FROM students WHERE class_name = ? AND exam_name = ? AND exam_year = ?`,
+        [exam.class_name, exam.exam_name, exam.exam_year]
+    );
+    const existing = new Map(students.map((s) => [String(s.roll), { id: s.id, status: s.status }]));
+    return { exam, subjects, existing };
+}
+
+function duplicateModeOf(value) {
+    return String(value || "").toLowerCase() === "update" ? "update" : "skip";
+}
+
+// --------------------------------------------------------------------------
+// PREVIEW: reads the file. With exam_id it also checks every row (same checks as the import).
+// --------------------------------------------------------------------------
+router.post("/bulk-preview", upload.single("excelFile"), async (req, res) => {
+    if (!req.file) throw httpError(400, "Please select an Excel file.");
+
+    const sheet = await excel.readSheet(req.file.buffer, { maxRows: config.upload.maxRows });
+    const rawRows = sheet.rows.map(({ __row, ...rest }) => rest);
+
+    const response = { success: true, total_rows: rawRows.length, columns: sheet.columns, rows: rawRows };
+
+    const examId = Number(req.body && req.body.exam_id);
+    if (examId) {
+        const { exam, subjects, existing } = await loadExamContext(examId);
+        const analysis = excel.analyzeRows({
+            columns: sheet.columns,
+            rows: sheet.rows,
+            subjects,
+            existing,
+            duplicateMode: duplicateModeOf(req.body.duplicate_mode),
+            lockPublished: req.user.role !== "admin"
+        });
+        response.exam = { id: exam.id, exam_name: exam.exam_name, exam_year: exam.exam_year, class_name: exam.class_name };
+        response.counts = analysis.counts;
+        response.analysis = analysis.rows.map((r) => ({
+            row: r.row, name: r.name, roll: r.roll, registration: r.registration,
+            valid: r.valid, state: r.state, errors: r.errors, gpa: r.gpa, grade: r.grade, result: r.result
+        }));
+    }
+    res.json(response);
+});
+
+// --------------------------------------------------------------------------
+// IMPORT
+// --------------------------------------------------------------------------
+router.post("/bulk-import", upload.single("excelFile"), async (req, res) => {
+    if (!req.file) throw httpError(400, "Please select an Excel file.");
+    const examId = Number(req.body && req.body.exam_id);
+    if (!examId) throw httpError(400, "Please select an exam.");
+
+    const mode = duplicateModeOf(req.body.duplicate_mode);
+    const isAdmin = req.user.role === "admin";
+
+    // Only an admin can publish while importing. Default (no choice sent) = publish, like the old system.
+    const publishRaw = String(req.body.publish === undefined ? "true" : req.body.publish).toLowerCase();
+    const publish = isAdmin && publishRaw !== "false";
+
+    const sheet = await excel.readSheet(req.file.buffer, { maxRows: config.upload.maxRows });
+    const { exam, subjects, existing } = await loadExamContext(examId);
+    const analysis = excel.analyzeRows({
+        columns: sheet.columns,
+        rows: sheet.rows,
+        subjects,
+        existing,
+        duplicateMode: mode,
+        lockPublished: !isAdmin
+    });
+
+    const subjectsById = new Map(subjects.map((s) => [Number(s.id), s]));
+    const notHeldSubjectIds = analysis.notHeldSubjectIds || [];
+    const good = analysis.rows.filter((r) => r.valid);
+    let created = 0;
+    let updated = 0;
+
+    await db.tx(async (client) => {
+        // Persist exam-wide subjects marked N/A so reports and publishing know they were not held.
+        await client.query(
+            `DELETE FROM exam_not_held_subjects WHERE exam_id = $1`,
+            [exam.id]
+        );
+        for (const subjectId of notHeldSubjectIds) {
+            await client.query(
+                `INSERT INTO exam_not_held_subjects (exam_id, subject_id) VALUES ($1, $2)
+                 ON CONFLICT (exam_id, subject_id) DO NOTHING`,
+                [exam.id, subjectId]
+            );
+        }
+        for (const item of good) {
+            const { processed, final } = gradeSubjects(subjectsById, item.marks);
+            const student = { name: item.name, roll: item.roll, registration: item.registration, group_name: item.group_name };
+
+            if (item.state === "update") {
+                await client.query(
+                    `UPDATE students
+                     SET name = $1, registration = $2, group_name = $3,
+                         final_gpa = $4, final_grade = $5, result_status = $6,
+                         status = CASE WHEN $7 THEN 'published' ELSE status END,
+                         updated_at = now()
+                     WHERE id = $8`,
+                    [student.name, student.registration, student.group_name,
+                     final.gpa, final.grade, final.status, publish, item.existing_id]
+                );
+                await replaceResults(client, item.existing_id, processed);
+                updated++;
+            } else {
+                await insertStudentWithResults(client, {
+                    exam, student, processed, final, status: publish ? "published" : "draft"
+                });
+                created++;
+            }
+        }
+    });
+
+    const errors = analysis.rows
+        .filter((r) => !r.valid)
+        .map((r) => ({ row: r.row, name: r.name, roll: r.roll, error: r.errors.join(" ") }));
+
+    await audit.log(req, "bulk_import", "exam", exam.id,
+        `Excel import for Class ${exam.class_name} - ${exam.exam_name} ${exam.exam_year}: ` +
+        `${created} new, ${updated} updated, ${errors.length} not imported` + (publish ? " (published)" : " (draft)"),
+        { file: req.file.originalname, mode, published: publish, created, updated, not_imported: errors.length });
+
+    res.json({
+        success: true,
+        message: errors.length === 0
+            ? "Bulk import completed successfully."
+            : `Import finished: ${good.length} saved, ${errors.length} row(s) NOT imported.`,
+        total: analysis.rows.length,
+        processed: good.length,
+        created,
+        updated,
+        failed: errors.length,
+        errors,
+        published: publish
+    });
+});
+
+// --------------------------------------------------------------------------
+// Excel template
+// --------------------------------------------------------------------------
+router.get("/download-excel-demo", async (req, res) => {
+    const examId = Number(req.query.exam_id);
+    let subjects = null;
+    let exam = null;
+    let filename = "result-template.xlsx";
+
+    if (examId) {
+        const ctx = await loadExamContext(examId);
+        subjects = ctx.subjects;
+        exam = ctx.exam;
+        filename = `result-template-class-${exam.class_name}-${exam.exam_year}.xlsx`.replace(/[^A-Za-z0-9._-]+/g, "-");
     }
 
-    async function doImport() {
-        if (!(await App.confirm("Import results", "Save the valid rows of this file? Rows with problems are skipped and listed afterwards.", { confirmText: "Import" }))) return;
-        $import.disabled = true; $import.textContent = "Importing...";
-        const r = await App.api("/api/admin/bulk-import", { method: "POST", form: formData() });
-        $import.textContent = "Import results"; ready();
-        if (!r.ok) return App.toast(r.data.message || "Import failed.", "error");
-        const d = r.data, box = App.$("#done");
-        box.innerHTML = '<h3 class="card-title">Import finished</h3><div class="flex flex-wrap gap-2">' +
-            chip(d.processed + " saved", "badge-green") + (d.updated ? chip(d.updated + " replaced", "badge-blue") : "") +
-            (d.failed ? chip(d.failed + " not imported", "badge-red") : "") + chip(d.published ? "Published" : "Draft", d.published ? "badge-green" : "badge-amber") + "</div>" +
-            (d.errors.length ? '<div class="table-wrap mt-4 max-h-80 overflow-y-auto"><table class="table"><thead><tr><th>Row</th><th>Name</th><th>Roll</th><th>Problem</th></tr></thead><tbody>' +
-                d.errors.map(function (e) { return "<tr><td>" + e.row + "</td><td>" + App.esc(e.name) + "</td><td>" + App.esc(e.roll) + '</td><td class="text-xs text-red-600">' + App.esc(e.error) + "</td></tr>"; }).join("") + "</tbody></table></div>" : "") +
-            '<p class="mt-4"><a class="btn-primary" href="/pages/result-list.html">View results</a></p>';
-        box.classList.remove("hidden");
-        App.$("#preview").classList.add("hidden");
-        box.scrollIntoView({ behavior: "smooth" });
-    }
+    const buffer = await excel.buildTemplate({ subjects, exam });
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(Buffer.from(buffer));
+});
 
-    (async function () {
-        const user = await App.shell("bulk");
-        if (!user) return;
-        isAdmin = user.role === "admin";
-        if (!isAdmin) { App.$("#publish").innerHTML = '<option value="false">Save as draft (an admin publishes later)</option>'; App.$("#publish").disabled = true; }
-        const r = await App.api("/api/admin/exams");
-        App.fillSelect($exam, (r.ok ? r.data.exams : []).map(function (e) { return { value: e.id, label: e.exam_name + " - " + e.class_name + " - " + e.exam_year }; }), "Select exam");
-        $exam.onchange = function () { App.$("#preview").classList.add("hidden"); ready(); };
-        App.$("#file").onchange = function () { setFile(this.files[0] || null); };
-        const drop = App.$("#drop");
-        ["dragover", "dragenter"].forEach(function (n) { drop.addEventListener(n, function (e) { e.preventDefault(); drop.classList.add("border-brand-400"); }); });
-        drop.addEventListener("dragleave", function () { drop.classList.remove("border-brand-400"); });
-        drop.addEventListener("drop", function (e) { e.preventDefault(); drop.classList.remove("border-brand-400"); if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
-        $check.onclick = check; $import.onclick = doImport;
-        $tpl.onclick = function () { window.location.href = "/api/admin/download-excel-demo?exam_id=" + encodeURIComponent($exam.value); };
-    })();
-</script>
-</body>
-</html>
+module.exports = router;
