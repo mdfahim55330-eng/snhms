@@ -240,6 +240,18 @@ async function migrate() {
                 SET application_no = LPAD(id::text, 6, '0')
                 WHERE application_no IS NULL OR application_no = '';
             ALTER TABLE site_admissions ALTER COLUMN application_no SET NOT NULL;
+            ALTER TABLE site_admissions
+                ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS payment_transaction TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'Not Required',
+                ADD COLUMN IF NOT EXISTS admin_note TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS admit_roll TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS admit_card_enabled BOOLEAN NOT NULL DEFAULT FALSE;
+            INSERT INTO site_settings(key,value) VALUES
+                ('admission_fee','0'),('admission_online_payment','true'),('admission_school_payment','true'),
+                ('admission_bkash',''),('admission_nagad',''),('admission_rocket',''),('admission_payment_note',''),
+                ('admission_exam_date',''),('admission_exam_time',''),('admission_exam_center',''),('admission_exam_instructions','')
+            ON CONFLICT(key) DO NOTHING;
             CREATE UNIQUE INDEX IF NOT EXISTS uq_site_admission_number
                 ON site_admissions(class_name, application_no);
             CREATE TABLE IF NOT EXISTS site_admission_counters (
