@@ -86,3 +86,12 @@
     -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important;
   }
 }
+
+/* Print logo: preserve its aspect ratio and prevent remote-image dependencies. */
+@media print {
+  .print-head .print-logo, .admit-head img {
+    display:block!important; visibility:visible!important; opacity:1!important;
+    width:22mm!important; height:22mm!important; min-width:22mm!important;
+    max-width:22mm!important; object-fit:contain!important;
+  }
+}
