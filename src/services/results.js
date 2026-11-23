@@ -77,7 +77,7 @@ async function buildResultData(student) {
     const position = me && me.position !== null ? me.position : "-";
 
     const displayedSubjects = subjects.map((subject) => subject.not_held
-        ? { ...subject, marks: null, grade: "N/A", grade_point: null, display_marks: "N/A" }
+        ? { ...subject, marks: "N/A", grade: "N/A", grade_point: null, display_marks: "N/A" }
         : { ...subject, display_marks: subject.marks });
 
     return {
