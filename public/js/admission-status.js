@@ -89,6 +89,7 @@ async function printCard(a,x){
  window.print();
  setTimeout(restore,60000);
 }
+setLanguage(language);
 loadSchool().then(()=>setLanguage(language));
 const year=$("#statusYear");if(year)year.textContent=new Date().getFullYear();
 
