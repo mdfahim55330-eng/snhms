@@ -46,3 +46,20 @@
   .form-status-copy strong{font-size:17px}
   .form-status-button{grid-column:1/-1;width:100%;min-height:58px;font-size:15px}
 }
+
+
+/* Reliable print isolation for mobile Chrome and desktop browsers. */
+@media print {
+  body.printing-admission { background:#fff!important; }
+  body.printing-admission > * { display:none!important; }
+  body.printing-admission > #printSheet { display:block!important; position:static!important; width:100%!important; margin:0!important; padding:0!important; }
+  body.printing-admission #printSheet .print-page { display:block!important; visibility:visible!important; }
+  body.printing-admit { background:#fff!important; }
+  body.printing-admit > * { display:none!important; }
+  body.printing-admit > main { display:block!important; margin:0!important; padding:0!important; width:100%!important; max-width:none!important; }
+  body.printing-admit > main > * { display:none!important; }
+  body.printing-admit #admitPrint { display:block!important; visibility:visible!important; position:static!important; width:100%!important; }
+  body.printing-admit #admitPrint .admit-card { display:block!important; visibility:visible!important; height:135mm!important; margin:0!important; box-shadow:none!important; break-inside:avoid!important; page-break-after:avoid!important; }
+  body.printing-admission .developer-credit,
+  body.printing-admit .developer-credit { display:none!important; }
+}
