@@ -85,8 +85,10 @@ router.get("/website/admissions/summary",async(req,res)=>{
  res.json({success:true,summary:Object.fromEntries(["total","pending","reviewed","accepted","rejected"].map(key=>[key,Number(row[key])||0]))});
 });
 router.get("/website/admissions/export.xlsx",async(req,res)=>{
- const applications=await db.all(`SELECT id,student_name,guardian_name,birth_date,gender,class_name,phone,email,address,
-  previous_school,status,created_at FROM site_admissions ORDER BY created_at DESC,id DESC`);
+ const applications=await db.all(`SELECT id,application_no,student_name,student_name_en,father_name,mother_name,guardian_name,birth_date,
+  birth_reg_no,gender,religion,nationality,class_name,group_name,academic_year,phone,guardian_phone,
+  guardian_occupation,email,address,present_address,permanent_address,previous_school,previous_class,
+  status,created_at FROM site_admissions ORDER BY created_at DESC,id DESC`);
  const buffer=await buildAdmissionsWorkbook(applications);
  await audit.log(req,"website_admissions_exported","site_admissions",null,
   "Exported "+applications.length+" admission applications",{count:applications.length});
