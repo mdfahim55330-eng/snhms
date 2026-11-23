@@ -115,7 +115,7 @@ function makePrintSheet(data) {
       printField(t("dob"),data.birth_date),printField(t("birthRegNo"),data.birth_reg_no),printField(t("sex"),data.gender),
       printField(t("religionLabel"),data.religion),printField(t("nationalityLabel"),data.nationality),printField(t("branch"),data.group_name)
     ].join("");
-    $("#printSheet").innerHTML='<article class="print-page '+(en?'print-en':'')+'"><header class="print-head"><img class="print-logo" src="'+esc(school.logo_url||"/6716-removebg-preview.png")+'" alt="Logo"><div><h1>'+esc(schoolName)+'</h1><p class="en">'+esc(en?(school.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল"):(school.school_name_en||"Shaheed Nur Hossain Memorial School"))+'</p><p>'+esc(address)+(school.phone?' · '+esc(school.phone):'')+'</p><p>EIIN: '+esc(school.eiin||"—")+'</p></div><div></div></header>'+
+    $("#printSheet").innerHTML='<article class="print-page '+(en?'print-en':'')+'"><header class="print-head"><img class="print-logo" src="'+"/6716-removebg-preview.png?v=20261123"+'" alt="Logo"><div><h1>'+esc(schoolName)+'</h1><p class="en">'+esc(en?(school.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল"):(school.school_name_en||"Shaheed Nur Hossain Memorial School"))+'</p><p>'+esc(address)+(school.phone?' · '+esc(school.phone):'')+'</p><p>EIIN: '+esc(school.eiin||"—")+'</p></div><div></div></header>'+
     '<div class="print-title">'+(en?'ADMISSION APPLICATION FORM':'ভর্তি আবেদন ফরম / ADMISSION APPLICATION FORM')+'</div>'+
     '<div class="print-meta"><span>'+t("admissionClass")+': '+esc(data.class_name)+'</span><span>'+t("academicYear")+': '+esc(data.academic_year||new Date().getFullYear())+'</span><span class="print-number">'+t("applicationNo")+': '+esc(data.application_no)+'</span></div>'+
     '<div class="print-section">'+(en?'1. ':'১. ')+t("studentInfo")+'</div><div class="print-grid"><div class="print-fields">'+fields+'</div><div class="photo-box">'+t("studentPhoto")+'</div></div>'+
@@ -147,6 +147,12 @@ async function printAdmissionForm(){
     if(!submittedApplication) return;
     makePrintSheet(submittedApplication);
     document.body.classList.add("printing-admission");
+    const logo=document.querySelector("#printSheet .print-logo");
+    if(logo){
+      logo.src="/6716-removebg-preview.png?v=20261123";
+      logo.loading="eager"; logo.decoding="sync";
+      if(!logo.complete) await new Promise(resolve=>{logo.onload=resolve;logo.onerror=resolve;});
+    }
     try { if(document.fonts && document.fonts.ready) await document.fonts.ready; } catch(_) {}
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     window.addEventListener("afterprint",()=>document.body.classList.remove("printing-admission"),{once:true});
