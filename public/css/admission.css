@@ -347,3 +347,41 @@
 @media print{
  body.printing-admit #admitPrint .admit-eiin{margin:.4mm 0 0!important;font-size:6.5pt!important;line-height:1.1!important}
 }
+
+
+/* Match every admit-card field to the Student Name layout: label above,
+   value below, both aligned to the left edge. */
+#admitPrint .admit-field{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  gap:1mm!important;
+  text-align:left!important;
+}
+#admitPrint .admit-field span{
+  display:block!important;
+  width:100%!important;
+  text-align:left!important;
+}
+#admitPrint .admit-field b{
+  display:block!important;
+  width:100%!important;
+  text-align:left!important;
+  margin:0!important;
+}
+@media print{
+  body.printing-admit #admitPrint .admit-field{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    gap:.6mm!important;
+    text-align:left!important;
+  }
+  body.printing-admit #admitPrint .admit-field span,
+  body.printing-admit #admitPrint .admit-field b{
+    width:100%!important;
+    text-align:left!important;
+  }
+}
