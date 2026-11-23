@@ -112,3 +112,10 @@ https://github.com/mdfahim55330-eng/School-Result-System-New
 - ইংরেজি সংস্করণে প্রতিষ্ঠানের নাম, স্লোগান, পরিচিতি, অধ্যক্ষের বার্তা, লক্ষ্য ও ভিশনের English copy Website Management-এর প্রতিষ্ঠানের তথ্য ফর্মে লিখুন।
 - পেজ, নোটিশ, শিক্ষক-কর্মচারী, গ্যালারি, রুটিন, ডাউনলোড ও তিন-ডট মেনুর জন্য English field-ও পূরণ করুন। পুরোনো তথ্যের পাশে থাকা “English সম্পাদনা” ব্যবহার করে ইংরেজি কপি যোগ বা সংশোধন করা যাবে।
 - কোনো English copy ফাঁকা থাকলে সেই নির্দিষ্ট তথ্যটি বাংলা কপি থেকে fallback হতে পারে। সম্পূর্ণ ইংরেজি অভিজ্ঞতার জন্য প্রতিটি প্রকাশিত কনটেন্টের English copy পূরণ করুন।
+
+
+### Excel import: subject exam not held
+
+When importing an exam result from Excel, enter `N/A` in the subject column for **every student** if that subject's exam was not held. The importer treats the subject as not held for the selected exam and excludes it from total marks, total full marks, GPA, grade, pass/fail calculation, merit positions, tabulation and subject statistics. The marksheet displays `N/A` for that subject.
+
+Do not leave the cells blank. Do not mix `N/A` and numeric marks in the same subject column: either every student's cell must be `N/A`, or every student's cell must contain a valid mark. A blank cell or a mixed column is reported as an import error.
