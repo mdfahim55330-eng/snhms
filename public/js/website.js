@@ -221,7 +221,7 @@ document.addEventListener("click", async (event) => {
     }
 
     const deleteButton = event.target.closest("[data-delete]");
-    if (deleteButton && await App.confirm("তথ্য Delete", "Are you sure you want to permanently delete this information?", {
+    if (deleteButton && await App.confirm("Delete Information", "Are you sure you want to permanently delete this information?", {
         danger: true,
         confirmText: "Delete"
     })) {
