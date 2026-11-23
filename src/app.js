@@ -28,7 +28,8 @@ const STAFF_PAGES = {
     "tabulation": "any",
     "statistics": "any",
     "users": "admin",
-    "website": "admin"
+    "website": "admin",
+    "admissions": "admin"
 };
 
 async function guardStaffPages(req, res, next) {
