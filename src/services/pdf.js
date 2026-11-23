@@ -170,9 +170,9 @@ function drawMarksheet(doc, data, extra = {}) {
             s.subject_name,
             s.subject_code,
             s.full_marks,
-            s.marks,
+            s.display_marks !== undefined ? s.display_marks : s.marks,
             s.grade,
-            fmt(s.grade_point, 2)
+            s.grade_point === null || s.grade_point === undefined ? "-" : fmt(s.grade_point, 2)
         ]);
     });
     y += 16;
