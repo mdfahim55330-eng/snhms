@@ -221,6 +221,36 @@ async function migrate() {
                 previous_school TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'Pending',
                 created_at TIMESTAMPTZ NOT NULL DEFAULT now()
             );
+            ALTER TABLE site_admissions
+                ADD COLUMN IF NOT EXISTS application_no TEXT,
+                ADD COLUMN IF NOT EXISTS student_name_en TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS father_name TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS mother_name TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS birth_reg_no TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS religion TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS nationality TEXT NOT NULL DEFAULT 'বাংলাদেশী',
+                ADD COLUMN IF NOT EXISTS group_name TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS academic_year TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS previous_class TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS guardian_phone TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS present_address TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS permanent_address TEXT NOT NULL DEFAULT '';
+            UPDATE site_admissions
+                SET application_no = LPAD(id::text, 6, '0')
+                WHERE application_no IS NULL OR application_no = '';
+            ALTER TABLE site_admissions ALTER COLUMN application_no SET NOT NULL;
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_site_admission_number
+                ON site_admissions(class_name, application_no);
+            CREATE TABLE IF NOT EXISTS site_admission_counters (
+                class_name TEXT PRIMARY KEY,
+                last_number INTEGER NOT NULL DEFAULT 0 CHECK (last_number BETWEEN 0 AND 999999)
+            );
+            INSERT INTO site_admission_counters(class_name, last_number)
+                SELECT class_name, MAX(application_no::integer)
+                FROM site_admissions
+                GROUP BY class_name
+                ON CONFLICT(class_name) DO UPDATE
+                SET last_number = GREATEST(site_admission_counters.last_number, EXCLUDED.last_number);
             CREATE TABLE IF NOT EXISTS site_messages (
                 id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL DEFAULT '',
                 email TEXT NOT NULL DEFAULT '', subject TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
