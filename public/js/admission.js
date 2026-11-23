@@ -5,6 +5,7 @@ const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":
 let school = { school_name: "শহীদ নূর হোসেন মেমোরিয়াল স্কুল", school_name_en: "Shaheed Nur Hossain Memorial School" };
 let language = localStorage.getItem("snhms-language") === "en" ? "en" : "bn";
 let submittedApplication = null;
+let admissionSettings = {};
 const words = {
 bn: {
 home:"← হোমপেজে ফিরে যান",topTitle:"অনলাইন ভর্তি আবেদন",results:"ফলাফল",formTitle:"ভর্তি আবেদন ফরম",
@@ -84,7 +85,19 @@ document.querySelectorAll(".language-btn").forEach(btn=>btn.addEventListener("cl
 async function loadFormData() {
     const response=await fetch("/api/site");
     if(!response.ok) throw new Error(t("errorLoad"));
-    const data=await response.json(); school=data.settings||school;
+    const data=await response.json(); school=data.settings||school; admissionSettings=school;
+    const fee=Math.max(0,Number(school.admission_fee||0)||0);
+    $("#admissionFeeInfo").hidden=false;
+    $("#admissionFeeInfo").textContent=fee===0?"আবেদন ফি: সম্পূর্ণ ফ্রি":"আবেদন ফি: "+fee+" টাকা";
+    if(fee>0){
+      $("#paymentSection").hidden=false;
+      const method=$("#paymentMethod");method.innerHTML="";
+      if(school.admission_online_payment!=="false")method.add(new Option("অনলাইনে (বিকাশ/নগদ/রকেট)","online"));
+      if(school.admission_school_payment!=="false")method.add(new Option("স্কুলে সরাসরি জমা","school"));
+      $("#paymentInstructions").textContent=[school.admission_bkash&&"বিকাশ: "+school.admission_bkash,school.admission_nagad&&"নগদ: "+school.admission_nagad,school.admission_rocket&&"রকেট: "+school.admission_rocket,school.admission_payment_note].filter(Boolean).join(" | ");
+      method.addEventListener("change",()=>{const online=method.value==="online";$("#transactionField").hidden=!online;form.elements.payment_transaction.required=online;});
+      method.dispatchEvent(new Event("change"));
+    }
     const classSelect=$("#className");
     (data.classes||[]).forEach(name=>{const option=document.createElement("option");option.value=name;option.textContent=name;classSelect.append(option);});
     const year=$("#academicYear");const current=new Date().getFullYear();
@@ -116,7 +129,7 @@ function makePrintSheet(data) {
 }
 form.addEventListener("submit",async event=>{
     event.preventDefault();$("#formError").hidden=true;const button=$("#submitButton");button.disabled=true;$("#submitStatus").textContent=t("submitting");
-    const payload=Object.fromEntries(new FormData(form));delete payload.declaration;
+    const payload=Object.fromEntries(new FormData(form));delete payload.declaration;if(Number(admissionSettings.admission_fee||0)<=0){delete payload.payment_method;delete payload.payment_transaction;}
     payload.guardian_name=payload.guardian_name||payload.father_name||payload.mother_name;
     try{
       const response=await fetch("/api/admission",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
