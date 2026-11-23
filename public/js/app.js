@@ -340,6 +340,6 @@
 
 
 // Add a consistent developer credit at the bottom of public pages.
-document.addEventListener("DOMContentLoaded",()=>{if(!document.querySelector(".developer-credit")){const f=document.createElement("footer");f.className="developer-credit";f.textContent="Developed by Mohammad Fahim";f.style.cssText="text-align:center;padding:14px 12px;background:#061f33;color:#dbe6eb;font:13px Arial,sans-serif";document.body.appendChild(f);}});
+document.addEventListener("DOMContentLoaded",()=>{if(!document.getElementById("main")&&!document.querySelector(".developer-credit")){const f=document.createElement("footer");f.className="developer-credit";f.textContent="Developed by Mohammad Fahim";f.style.cssText="text-align:center;padding:14px 12px;background:#061f33;color:#dbe6eb;font:13px Arial,sans-serif";document.body.appendChild(f);}});
 
 })();
