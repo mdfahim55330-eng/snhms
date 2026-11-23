@@ -102,11 +102,24 @@ router.post("/bulk-import", upload.single("excelFile"), async (req, res) => {
     });
 
     const subjectsById = new Map(subjects.map((s) => [Number(s.id), s]));
+    const notHeldSubjectIds = analysis.notHeldSubjectIds || [];
     const good = analysis.rows.filter((r) => r.valid);
     let created = 0;
     let updated = 0;
 
     await db.tx(async (client) => {
+        // Persist exam-wide subjects marked N/A so reports and publishing know they were not held.
+        await client.query(
+            `DELETE FROM exam_not_held_subjects WHERE exam_id = $1`,
+            [exam.id]
+        );
+        for (const subjectId of notHeldSubjectIds) {
+            await client.query(
+                `INSERT INTO exam_not_held_subjects (exam_id, subject_id) VALUES ($1, $2)
+                 ON CONFLICT (exam_id, subject_id) DO NOTHING`,
+                [exam.id, subjectId]
+            );
+        }
         for (const item of good) {
             const { processed, final } = gradeSubjects(subjectsById, item.marks);
             const student = { name: item.name, roll: item.roll, registration: item.registration, group_name: item.group_name };
