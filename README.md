@@ -23,7 +23,7 @@ The result portal is integrated from the `School-Result-System-New` project:
 - Individual PDF marksheet with Bengali fonts and QR verification.
 - Merit list, tabulation sheet, statistics, activity log, backup and restore.
 - GPA-5 grading and fourth-subject bonus logic.
-- Ranking: GPA descending, then total marks descending; equal total marks share a position; failed students are unranked.
+- Ranking: total marks descending, then GPA descending; students with equal total marks share a position even if their GPAs differ; failed students are unranked.
 
 ## Requirements
 - Node.js 20 or newer (Node.js 22 LTS recommended).
