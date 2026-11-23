@@ -17,3 +17,8 @@
  #mainNav .more-dropdown.show{display:block}
 }
 @media(min-width:1001px){#mainNav{display:flex!important}.menu-toggle{display:none!important}}
+
+/* Unified navigation: every link is in the three-line menu; no overflow menu */
+@media(min-width:1001px){.header-inner{align-items:center;gap:16px}.brand{max-width:34%;flex:0 0 34%}#mainNav{flex:1;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 3px}#mainNav>a{padding:8px 7px;font-size:13px}#customMenuLinks{display:contents}}
+#customMenuLinks a{display:inline-block}
+@media(max-width:1000px){#mainNav{max-height:calc(100vh - 110px);overflow-y:auto}#customMenuLinks{display:contents}#customMenuLinks a{display:block;padding:10px 14px 10px 25px;border-top:1px solid #edf1f3}}
