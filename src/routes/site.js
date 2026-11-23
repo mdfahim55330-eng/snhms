@@ -79,7 +79,7 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
              VALUES
              ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
              RETURNING id, application_no, student_name, student_name_en, father_name, mother_name,
-                       guardian_name, birth_date, birth_reg_no, gender, religion, nationality,
+                       guardian_name, guardian_occupation, birth_date, birth_reg_no, gender, religion, nationality,
                        class_name, group_name, academic_year, phone, guardian_phone, email,
                        address, present_address, permanent_address, previous_school, previous_class,
                        status, created_at`,
@@ -97,7 +97,7 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
         return result.rows[0];
     });
 
-    res.status(201).json({
+    res.status(200).json({
         success: true,
         message: "আপনার ভর্তি আবেদন সফলভাবে জমা হয়েছে।",
         application
