@@ -63,3 +63,15 @@
   body.printing-admission .developer-credit,
   body.printing-admit .developer-credit { display:none!important; }
 }
+
+
+/* Keep the school emblem visible and fully rendered in printed documents. */
+@media print {
+  #printSheet .print-logo,
+  #admitPrint .admit-head img {
+    display:block!important;visibility:visible!important;opacity:1!important;
+    width:20mm!important;height:20mm!important;max-width:20mm!important;
+    object-fit:contain!important;print-color-adjust:exact!important;
+    -webkit-print-color-adjust:exact!important;
+  }
+}
