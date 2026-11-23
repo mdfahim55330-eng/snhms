@@ -4,3 +4,16 @@
 .more-menu{position:relative;display:inline-flex;align-items:center}.more-toggle{width:38px;height:38px;border:1px solid #dbe5e9;border-radius:50%;background:#f5f8fa;color:var(--navy);font-size:27px;line-height:1;cursor:pointer}.more-toggle:hover,.more-toggle[aria-expanded=true]{background:var(--navy);color:#fff}.more-dropdown{display:none;position:absolute;right:0;top:calc(100% + 12px);width:245px;max-height:70vh;overflow:auto;background:#fff;border:1px solid #e1e8ec;border-radius:9px;box-shadow:0 14px 36px #092d4426;padding:8px;z-index:60}.more-dropdown.show{display:grid}.more-dropdown a{display:block;padding:10px 12px;border-radius:6px;color:#28485b;font-size:14px;font-weight:600}.more-dropdown a:hover{background:#eef5f7;color:var(--blue)}#customMenuLinks{border-top:1px solid #e7edf0;margin-top:5px;padding-top:5px}@media(max-width:900px){.more-menu{width:100%;display:block}.more-toggle{display:none}.more-dropdown{display:grid;position:static;width:auto;max-height:none;box-shadow:none;border:0;border-radius:0;padding:0 0 8px;background:transparent}.more-dropdown a{padding:9px 12px 9px 25px;border-bottom:1px solid #edf1f3}}
 
 .top-actions{display:flex;align-items:center;gap:18px}.language-switch{display:inline-flex;align-items:center;gap:6px;margin-left:4px;white-space:nowrap}.language-switch button{border:0;background:transparent;color:#e5edf2;font:inherit;cursor:pointer;padding:2px 4px}.language-switch button.active{color:#f0c96f;font-weight:700;text-decoration:underline;text-underline-offset:4px}@media(max-width:700px){.topinner{align-items:flex-start}.top-actions{gap:8px;flex-wrap:wrap;justify-content:flex-end}.language-switch{width:100%;justify-content:flex-end}}
+
+/* Reliable mobile navigation */
+.menu-toggle{cursor:pointer;align-items:center;justify-content:center;min-width:44px;min-height:42px;font-size:22px;line-height:1;z-index:25}
+@media(max-width:1000px){
+ .header-inner{position:relative}
+ .menu-toggle{display:inline-flex!important;flex:0 0 auto}
+ #mainNav{display:none!important;width:100%;flex-direction:column;align-items:stretch;gap:2px;padding:10px 0 14px;background:#fff}
+ #mainNav.open{display:flex!important}
+ #mainNav>a{display:block;padding:11px 14px;border-top:1px solid #edf1f3}
+ #mainNav .more-menu{display:block;padding:0 10px}
+ #mainNav .more-dropdown.show{display:block}
+}
+@media(min-width:1001px){#mainNav{display:flex!important}.menu-toggle{display:none!important}}
