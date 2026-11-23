@@ -233,6 +233,7 @@ async function migrate() {
                 ADD COLUMN IF NOT EXISTS academic_year TEXT NOT NULL DEFAULT '',
                 ADD COLUMN IF NOT EXISTS previous_class TEXT NOT NULL DEFAULT '',
                 ADD COLUMN IF NOT EXISTS guardian_phone TEXT NOT NULL DEFAULT '',
+                ADD COLUMN IF NOT EXISTS guardian_occupation TEXT NOT NULL DEFAULT '',
                 ADD COLUMN IF NOT EXISTS present_address TEXT NOT NULL DEFAULT '',
                 ADD COLUMN IF NOT EXISTS permanent_address TEXT NOT NULL DEFAULT '';
             UPDATE site_admissions
