@@ -190,6 +190,7 @@
         {
             group: "System", admin: true, items: [
                 { href: "/pages/users.html", label: "Users & Activity", icon: "users", key: "users" },
+                { href: "/pages/admissions.html", label: "Admission Management", icon: "users", key: "admissions" },
                 { href: "/pages/website.html", label: "Website Management", icon: "home", key: "website" }
             ]
         }
