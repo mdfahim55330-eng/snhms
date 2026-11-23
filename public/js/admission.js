@@ -8,7 +8,7 @@ let submittedApplication = null;
 let admissionSettings = {};
 const words = {
 bn: {
-home:"← হোমপেজে ফিরে যান",topTitle:"অনলাইন ভর্তি আবেদন",results:"ফলাফল",formTitle:"ভর্তি আবেদন ফরম",
+home:"← হোমপেজে ফিরে যান",statusLink:"আবেদনের অবস্থা / এডমিট কার্ড দেখুন",statusHint:"আবেদনের অগ্রগতি জানুন এবং অনুমোদিত হলে এডমিট কার্ড প্রিন্ট করুন",topTitle:"অনলাইন ভর্তি আবেদন",results:"ফলাফল",formTitle:"ভর্তি আবেদন ফরম",
 introText:"সঠিক তথ্য দিয়ে ফরমটি পূরণ করে আবেদন জমা দিন। আবেদন নম্বর স্বয়ংক্রিয়ভাবে তৈরি হবে।",chooseLanguage:"ভাষা নির্বাচন করুন",
 studentSection:"শিক্ষার্থীর তথ্য",studentBn:"শিক্ষার্থীর নাম (বাংলা) *",studentEn:"শিক্ষার্থীর নাম (ইংরেজি)",
 class:"ভর্তির শ্রেণি *",selectClass:"শ্রেণি নির্বাচন করুন",year:"শিক্ষাবর্ষ",select:"নির্বাচন করুন",group:"শাখা / বিভাগ",
@@ -34,7 +34,7 @@ currentAddress:"বর্তমান ঠিকানা",permanent:"স্থ�
 emailLabel:"ইমেইল",religionLabel:"ধর্ম",nationalityLabel:"জাতীয়তা"
 },
 en: {
-home:"← Back to Home",topTitle:"Online Admission",results:"Results",formTitle:"Admission Application Form",
+home:"← Back to Home",statusLink:"Check Application Status / Admit Card",statusHint:"Track your application and print your admit card after approval.",topTitle:"Online Admission",results:"Results",formTitle:"Admission Application Form",
 introText:"Complete the form accurately and submit your application. Your application number will be generated automatically.",
 chooseLanguage:"Choose language",studentSection:"Student Information",studentBn:"Student Name (Bangla) *",
 studentEn:"Student Name (English)",class:"Applying for Class *",selectClass:"Select class",year:"Academic Year",select:"Select",
