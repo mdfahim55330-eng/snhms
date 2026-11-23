@@ -74,6 +74,23 @@
                 <label class="label">অর্জন (বাংলা)<textarea class="input mt-1 min-h-24 normal-case tracking-normal" name="achievements"></textarea></label>
                 <label class="label">Achievements (English)<textarea class="input mt-1 min-h-24 normal-case tracking-normal" name="achievements_en"></textarea></label>
             </div>
+            <section class="rounded-xl border border-brand-100 bg-brand-50/40 p-4 space-y-3">
+                <h3 class="font-bold text-slate-800">ভর্তি ফি, পেমেন্ট ও পরীক্ষার তথ্য</h3>
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <label class="label">আবেদন ফি (টাকা; ০ = ফ্রি)<input class="input mt-1" type="number" min="0" step="0.01" name="admission_fee" value="0"></label>
+                    <label class="label">বিকাশ নম্বর<input class="input mt-1" name="admission_bkash"></label>
+                    <label class="label">নগদ নম্বর<input class="input mt-1" name="admission_nagad"></label>
+                    <label class="label">রকেট নম্বর<input class="input mt-1" name="admission_rocket"></label>
+                    <label class="label">পরীক্ষার তারিখ<input class="input mt-1" type="date" name="admission_exam_date"></label>
+                    <label class="label">পরীক্ষার সময়<input class="input mt-1" name="admission_exam_time" placeholder="সকাল ১০:০০"></label>
+                    <label class="label">পরীক্ষার কেন্দ্র<input class="input mt-1" name="admission_exam_center"></label>
+                    <label class="label">অনলাইন পেমেন্ট চালু (true/false)<input class="input mt-1" name="admission_online_payment" value="true"></label>
+                    <label class="label">স্কুলে জমা চালু (true/false)<input class="input mt-1" name="admission_school_payment" value="true"></label>
+                </div>
+                <label class="label">পেমেন্ট নির্দেশনা<textarea class="input mt-1" name="admission_payment_note"></textarea></label>
+                <label class="label">পরীক্ষার নির্দেশনা<textarea class="input mt-1" name="admission_exam_instructions"></textarea></label>
+                <p class="text-xs text-slate-500">বিকাশ/নগদ/রকেটের Transaction ID অ্যাডমিন যাচাই করবেন। স্বয়ংক্রিয় পেমেন্ট গেটওয়ে সংযুক্ত নয়।</p>
+            </section>
             <div class="flex flex-wrap items-center gap-3">
                 <button type="submit" class="btn-primary">তথ্য সংরক্ষণ</button>
                 <span id="settingsMsg" class="text-sm text-slate-500" role="status"></span>
