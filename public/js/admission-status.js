@@ -1,0 +1,10 @@
+"use strict";
+const form=document.querySelector("#statusForm"),err=document.querySelector("#statusError"),result=document.querySelector("#statusResult"),print=document.querySelector("#admitPrint");
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+form.addEventListener("submit",async e=>{e.preventDefault();err.hidden=true;result.hidden=true;const data=Object.fromEntries(new FormData(form));
+try{const r=await fetch("/api/admission/status?"+new URLSearchParams(data));const d=await r.json();if(!r.ok)throw new Error(d.message||"আবেদন পাওয়া যায়নি");
+const a=d.application,x=d.exam,labels={Pending:"আবেদন জমা হয়েছে",Reviewed:"যাচাই চলছে",Accepted:"অনুমোদিত",Rejected:"বাতিল","Waiting List":"অপেক্ষমাণ তালিকা"};
+result.innerHTML='<div><h2>আবেদনের তথ্য</h2><p>Application ID: <b>'+esc(a.application_no)+'</b></p><p>শিক্ষার্থী: '+esc(a.student_name)+'</p><p>শ্রেণি: '+esc(a.class_name)+'</p><p>অবস্থা: <b>'+esc(labels[a.status]||a.status)+'</b></p><p>পেমেন্ট: '+esc(a.payment_status)+'</p></div>'+(a.can_print_admit_card?'<button id="printAdmit" class="submit-btn" type="button">অ্যাডমিট কার্ড প্রিন্ট করুন</button>':'<p>অ্যাডমিট কার্ড এখনো প্রকাশ করা হয়নি অথবা ফি যাচাই বাকি আছে।</p>');
+result.hidden=false;const btn=document.querySelector("#printAdmit");if(btn)btn.addEventListener("click",()=>printCards(a,x));
+}catch(ex){err.textContent=ex.message;err.hidden=false;}});
+function printCards(a,x){const card='<article class="admit-card"><header><h2>'+esc(x.school_name)+'</h2><h3>প্রবেশপত্র / ADMIT CARD</h3></header><div class="admit-grid"><p>নাম: <b>'+esc(a.student_name)+'</b></p><p>আবেদন নং: <b>'+esc(a.application_no)+'</b></p><p>শ্রেণি: <b>'+esc(a.class_name)+'</b></p><p>রোল: <b>'+esc(a.admit_roll||a.application_no)+'</b></p><p>শিক্ষাবর্ষ: '+esc(a.academic_year)+'</p><p>পরীক্ষার তারিখ: '+esc(x.exam_date)+'</p><p>সময়: '+esc(x.exam_time)+'</p><p>কেন্দ্র: '+esc(x.center)+'</p></div><p>'+esc(x.instructions)+'</p><footer>পরীক্ষার্থীর স্বাক্ষর: ____________________</footer></article>';print.innerHTML=card+card;print.hidden=false;window.print();}
