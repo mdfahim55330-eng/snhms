@@ -201,3 +201,44 @@
  body.printing-admission .print-page{width:190mm!important;height:277mm!important;min-height:277mm!important;margin:0!important;box-shadow:none!important;break-inside:avoid;page-break-after:avoid}
  body.printing-admission .print-section,body.printing-admission .print-meta span,body.printing-admission .print-title{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+
+/* Fix: keep the three signature labels well below the declaration text. */
+@media print {
+  body.printing-admission #printSheet .print-declaration {
+    display:block!important;
+    position:relative!important;
+    clear:both!important;
+    margin:5mm 0 0!important;
+    padding:3mm 3.5mm!important;
+    line-height:1.55!important;
+  }
+  body.printing-admission #printSheet .print-signatures {
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    align-items:start!important;
+    gap:10mm!important;
+    width:100%!important;
+    margin:19mm 0 0!important;
+    padding:0!important;
+    text-align:center!important;
+  }
+  body.printing-admission #printSheet .print-signatures div {
+    position:relative!important;
+    display:block!important;
+    min-height:13mm!important;
+    border:0!important;
+    padding:3mm 1mm 0!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+  }
+  body.printing-admission #printSheet .print-signatures div::before {
+    content:""!important;
+    position:absolute!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    border-top:1px solid #344b5b!important;
+  }
+}
