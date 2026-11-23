@@ -34,7 +34,12 @@ function printWindow(kind, markup) {
     win.document.open();
     win.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admission Print</title><link rel="stylesheet" href="/css/admission.css?v=admin-print-20261123"></head><body class="'+bodyClass+'"><div id="'+containerId+'">'+markup+'</div></body></html>');
     win.document.close();
-    const run = () => setTimeout(() => { try { win.focus(); win.print(); win.onafterprint = () => win.close(); } catch (_) {} }, 600);
+    let started = false;
+    const run = () => {
+        if (started) return;
+        started = true;
+        setTimeout(() => { try { win.focus(); win.print(); win.onafterprint = () => win.close(); } catch (_) {} }, 600);
+    };
     win.addEventListener("load", run, { once: true });
     setTimeout(() => { if (!win.closed && win.document.readyState === "complete") run(); }, 1000);
 }
