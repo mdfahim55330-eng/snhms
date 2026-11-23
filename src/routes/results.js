@@ -475,7 +475,7 @@ router.delete("/results/:id", requireAdminRole, async (req, res) => {
 router.put("/results/:id/publish", requireAdminRole, async (req, res) => {
     const studentId = idParam(req);
 
-    const student = await db.one(`SELECT id, name, roll, class_name, status FROM students WHERE id = ?`, [studentId]);
+    const student = await db.one(`SELECT id, name, roll, class_name, exam_name, exam_year, status FROM students WHERE id = ?`, [studentId]);
     if (!student) throw httpError(404, "Result not found.");
 
     const classSubjects = await db.all(`SELECT * FROM subjects WHERE class_name = ?`, [student.class_name]);
