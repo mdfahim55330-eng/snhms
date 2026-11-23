@@ -74,10 +74,10 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
             `INSERT INTO site_admissions
              (application_no, student_name, student_name_en, father_name, mother_name, guardian_name,
               birth_date, birth_reg_no, gender, religion, nationality, class_name, group_name,
-              academic_year, phone, guardian_phone, email, address, present_address,
+              academic_year, phone, guardian_phone, guardian_occupation, email, address, present_address,
               permanent_address, previous_school, previous_class)
              VALUES
-             ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
+             ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
              RETURNING id, application_no, student_name, student_name_en, father_name, mother_name,
                        guardian_name, birth_date, birth_reg_no, gender, religion, nationality,
                        class_name, group_name, academic_year, phone, guardian_phone, email,
@@ -89,7 +89,7 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
                 clean(body.birth_reg_no, 40), clean(body.gender, 30), clean(body.religion, 40),
                 clean(body.nationality || "বাংলাদেশী", 60), className, clean(body.group_name, 60),
                 clean(body.academic_year, 12), phone, clean(body.guardian_phone || phone, 40),
-                clean(body.email, 160), clean(body.present_address || body.address, 1000),
+                clean(body.guardian_occupation, 100), clean(body.email, 160), clean(body.present_address || body.address, 1000),
                 clean(body.present_address || body.address, 1000), clean(body.permanent_address, 1000),
                 clean(body.previous_school, 180), clean(body.previous_class, 60)
             ]
