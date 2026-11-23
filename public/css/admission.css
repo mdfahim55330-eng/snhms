@@ -385,3 +385,24 @@
     text-align:left!important;
   }
 }
+
+
+/* Keep the three application-form signatures at the bottom, just above
+   the A4 page border, with the footer safely below them. */
+@media print{
+  body.printing-admission #printSheet .print-page{position:relative!important;}
+  body.printing-admission #printSheet .print-signatures{
+    position:absolute!important;left:6mm!important;right:6mm!important;
+    bottom:12mm!important;width:auto!important;margin:0!important;padding:0!important;
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:8mm!important;align-items:end!important;
+  }
+  body.printing-admission #printSheet .print-signatures div{
+    min-height:9mm!important;height:9mm!important;padding:2.5mm 1mm 0!important;
+    border:0!important;font-size:7pt!important;line-height:1.2!important;
+  }
+  body.printing-admission #printSheet .print-signatures div::before{
+    top:0!important;border-top:1px solid #344b5b!important;
+  }
+  body.printing-admission #printSheet .print-foot{bottom:2mm!important;}
+}
