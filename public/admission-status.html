@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>আবেদনের অবস্থা ও এডমিট কার্ড</title>
 <link rel="icon" href="/6716-removebg-preview.png?v=4">
-<link rel="stylesheet" href="/css/admission.css?v=left-align-fields-20261123">
+<link rel="stylesheet" href="/css/admission.css?v=signature-bottom-20261123">
 </head>
 <body>
 <header class="page-top status-top"><a class="status-brand" href="/"><span data-i18n="schoolShort">শহীদ নূর হোসেন মেমোরিয়াল স্কুল</span></a><a href="/" data-i18n="home">← হোমপেজ</a><b data-i18n="pageTitle">আবেদনের অবস্থা / Application Status</b><a href="/admission.html" data-i18n="apply">ভর্তি আবেদন</a></header>
@@ -12,7 +12,7 @@
 <section class="intro status-intro"><div><p class="eyebrow">ADMISSION PORTAL</p><h1 data-i18n="heading">আবেদনের অবস্থা দেখুন</h1><p data-i18n="intro">আবেদন নম্বর ও অভিভাবকের মোবাইল নম্বর দিয়ে আবেদনের সর্বশেষ অবস্থা জানুন।</p></div><div class="intro-mark">✓<small>STATUS</small></div></section>
 <div class="status-language"><strong data-i18n="language">ভাষা নির্বাচন করুন</strong><div class="language-switch" role="group" aria-label="Language"><button type="button" class="language-btn active" data-lang="bn" aria-pressed="true">বাংলা</button><button type="button" class="language-btn" data-lang="en" aria-pressed="false">English</button></div></div>
 <form id="statusForm" class="application-form status-form">
-<div class="fields"><label><span data-i18n="applicationId">আবেদন নম্বর</span><input name="application_no" required maxlength="20" autocomplete="off" placeholder="যেমন: 260001"></label><label><span data-i18n="mobile">অভিভাবকের মোবাইল নম্বর</span><input name="phone" required inputmode="tel" maxlength="40" autocomplete="tel" placeholder="01XXXXXXXXX"></label></div>
+<div class="fields"><label><span data-i18n="applicationId">আবেদন নম্বর</span><input name="application_no" required maxlength="20" autocomplete="off" placeholder="যেমন: 260001" data-i18n-placeholder="applicationPlaceholder"></label><label><span data-i18n="mobile">অভিভাবকের মোবাইল নম্বর</span><input name="phone" required inputmode="tel" maxlength="40" autocomplete="tel" placeholder="01XXXXXXXXX" data-i18n-placeholder="mobilePlaceholder"></label></div>
 <button class="status-submit" type="submit"><span class="status-btn-icon">⌕</span><span data-i18n="check">আবেদনের অবস্থা দেখুন</span><span class="status-btn-arrow">→</span></button>
 <p id="statusError" class="message error" hidden></p>
 <p class="status-help" data-i18n="privacy">আপনার আবেদন নম্বর ও আবেদনের সময় দেওয়া মোবাইল নম্বর ব্যবহার করুন।</p>
@@ -20,5 +20,5 @@
 <section id="statusResult" class="success-panel status-result" hidden></section><div id="admitPrint" hidden></div>
 </main>
 <footer class="status-footer">© <span id="statusYear"></span> <span id="footerSchoolName">শহীদ নূর হোসেন মেমোরিয়াল স্কুল</span></footer>
-<script src="/js/admission-status.js?v=eiin-140721-20261123"></script>
+<script src="/js/admission-status.js?v=status-search-language-fix-20261123"></script>
 </body></html>
