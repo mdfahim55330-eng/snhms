@@ -144,3 +144,7 @@ form.addEventListener("submit",async event=>{
 $("#printButton").addEventListener("click",()=>window.print());
 $("#newApplication").addEventListener("click",()=>{form.reset();form.hidden=false;$("#successPanel").hidden=true;$("#submitStatus").textContent="";$("#formError").hidden=true;submittedApplication=null;window.scrollTo({top:0,behavior:"smooth"});});
 loadFormData().catch(error=>{$("#formError").textContent=error.message;$("#formError").hidden=false;});
+
+
+// Add a consistent developer credit at the bottom of public pages.
+document.addEventListener("DOMContentLoaded",()=>{if(!document.querySelector(".developer-credit")){const f=document.createElement("footer");f.className="developer-credit";f.textContent="Developed by Mohammad Fahim";f.style.cssText="text-align:center;padding:14px 12px;background:#061f33;color:#dbe6eb;font:13px Arial,sans-serif";document.body.appendChild(f);}});
