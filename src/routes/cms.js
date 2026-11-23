@@ -29,7 +29,7 @@ router.get("/website/data",async(req,res)=>{
  res.json({success:true,data});
 });
 router.put("/website/settings",async(req,res)=>{
- const allowed=new Set(["school_name","school_name_en","tagline","tagline_en","address","phone","email","eiin","logo_url","hero_image_url","about","about_en","principal_name","principal_name_en","principal_message","principal_message_en","history","history_en","mission","mission_en","vision","vision_en","facilities","facilities_en","achievements","achievements_en","facebook_url","youtube_url"]);
+ const allowed=new Set(["school_name","school_name_en","tagline","tagline_en","address","phone","email","eiin","logo_url","hero_image_url","about","about_en","principal_name","principal_name_en","principal_message","principal_message_en","history","history_en","mission","mission_en","vision","vision_en","facilities","facilities_en","achievements","achievements_en","facebook_url","youtube_url","admission_fee","admission_online_payment","admission_school_payment","admission_bkash","admission_nagad","admission_rocket","admission_payment_note","admission_exam_date","admission_exam_time","admission_exam_center","admission_exam_instructions"]);
  for(const [k,v] of Object.entries(req.body||{}))if(allowed.has(k))await db.query("INSERT INTO site_settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value",[k,clean(v,12000)]);
  await audit.log(req,"website_settings_updated","website",null,"Updated institutional website settings");
  res.json({success:true,message:"প্রতিষ্ঠানের তথ্য সংরক্ষণ হয়েছে।"});
@@ -98,10 +98,18 @@ router.get("/website/admissions/export.xlsx",async(req,res)=>{
  res.send(buffer);
 });
 router.put("/website/admissions/:id",async(req,res)=>{
- const status=String(req.body.status||"Pending");
- if(!["Pending","Reviewed","Accepted","Rejected"].includes(status))return res.status(400).json({success:false,message:"অবৈধ অবস্থা"});
- const result=await db.query("UPDATE site_admissions SET status=? WHERE id=? RETURNING *",[status,req.params.id]);
- res.json({success:true,item:result.rows[0]||null});
+ const fields=[],values=[];
+ if(req.body.status!==undefined){const v=String(req.body.status);if(!["Pending","Reviewed","Accepted","Rejected","Waiting List"].includes(v))return res.status(400).json({success:false,message:"অবৈধ অবস্থা"});fields.push("status=?");values.push(v);}
+ if(req.body.payment_status!==undefined){const v=String(req.body.payment_status);if(!["Pending","Verified","Rejected","Not Required"].includes(v))return res.status(400).json({success:false,message:"অবৈধ পেমেন্ট অবস্থা"});fields.push("payment_status=?");values.push(v);}
+ if(req.body.admit_roll!==undefined){fields.push("admit_roll=?");values.push(clean(req.body.admit_roll,60));}
+ if(req.body.admit_card_enabled!==undefined){fields.push("admit_card_enabled=?");values.push(Boolean(req.body.admit_card_enabled));}
+ if(req.body.admin_note!==undefined){fields.push("admin_note=?");values.push(clean(req.body.admin_note,1000));}
+ if(!fields.length)return res.status(400).json({success:false,message:"পরিবর্তনের তথ্য দিন"});
+ values.push(req.params.id);
+ const result=await db.query("UPDATE site_admissions SET "+fields.join(",")+" WHERE id=? RETURNING id,application_no,status,payment_status,admit_roll,admit_card_enabled",values);
+ if(!result.rowCount)return res.status(404).json({success:false,message:"আবেদন পাওয়া যায়নি"});
+ await audit.log(req,"admission_updated","site_admissions",req.params.id,"Updated admission review");
+ res.json({success:true,item:result.rows[0]});
 });
 router.get("/website/messages",async(req,res)=>res.json({success:true,items:await db.all("SELECT * FROM site_messages ORDER BY id DESC")}));
 router.put("/website/messages/:id/read",async(req,res)=>{
