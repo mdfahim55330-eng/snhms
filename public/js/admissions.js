@@ -32,7 +32,7 @@ function printWindow(kind, markup) {
     const containerId = kind === "application" ? "printSheet" : "admitPrint";
     const bodyClass = kind === "application" ? "printing-admission" : "printing-admit";
     win.document.open();
-    win.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admission Print</title><link rel="stylesheet" href="/css/admission.css?v=admin-print-20261123"></head><body class="'+bodyClass+'"><div id="'+containerId+'">'+markup+'</div></body></html>');
+    win.document.write('<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admission Print</title><link rel="stylesheet" href="/css/admission.css?v=signature-bottom-20261123"></head><body class="'+bodyClass+'"><div id="'+containerId+'">'+markup+'</div></body></html>');
     win.document.close();
     let started = false;
     const run = () => {
@@ -47,26 +47,30 @@ function pf(label, value, wide = false) {
     return '<div class="print-field'+(wide?' wide':'')+'"><b>'+esc(label)+':</b> '+esc(value||"—")+'</div>';
 }
 function printApplication(a) {
-    const name = schoolSettings.school_name || "শহীদ নূর হোসেন মেমোরিয়াল স্কুল";
+    const en = localStorage.getItem("snhms-language") === "en";
+    const name = en ? (schoolSettings.school_name_en || "Shaheed Nur Hossain Memorial School") : (schoolSettings.school_name || "শহীদ নূর হোসেন মেমোরিয়াল স্কুল");
     const nameEn = schoolSettings.school_name_en || "Shaheed Nur Hossain Memorial School";
     const address = schoolSettings.address || "বিরল, দিনাজপুর";
+    const L = (bn, english) => en ? english : bn;
     const fields = [
-        pf("শিক্ষার্থীর নাম (বাংলা)",a.student_name,true),pf("শিক্ষার্থীর নাম (ইংরেজি)",a.student_name_en,true),
-        pf("জন্মতারিখ",a.birth_date),pf("জন্ম নিবন্ধন নং",a.birth_reg_no),pf("লিঙ্গ",a.gender),
-        pf("ধর্ম",a.religion),pf("জাতীয়তা",a.nationality),pf("শাখা/বিভাগ",a.group_name)
+        pf(L("শিক্ষার্থীর নাম (বাংলা)","Student Name (Bangla)"),a.student_name,true),
+        pf(L("শিক্ষার্থীর নাম (ইংরেজি)","Student Name (English)"),a.student_name_en,true),
+        pf(L("জন্মতারিখ","Date of Birth"),a.birth_date),pf(L("জন্ম নিবন্ধন নং","Birth Registration No."),a.birth_reg_no),
+        pf(L("লিঙ্গ","Gender"),a.gender),pf(L("ধর্ম","Religion"),a.religion),
+        pf(L("জাতীয়তা","Nationality"),a.nationality),pf(L("শাখা/বিভাগ","Section / Group"),a.group_name)
     ].join("");
     const markup = '<article class="print-page"><header class="print-head"><img class="print-logo" src="'+esc(schoolSettings.logo_url||"/6716-removebg-preview.png")+'" alt="School Logo"><div><h1>'+esc(name)+'</h1><p class="en">'+esc(nameEn)+'</p><p>'+esc(address)+(schoolSettings.phone?' · '+esc(schoolSettings.phone):'')+'</p><p>EIIN: '+esc(schoolSettings.eiin||"—")+'</p></div><div></div></header>'+
-        '<div class="print-title">ভর্তি আবেদন ফরম / ADMISSION APPLICATION FORM</div>'+
-        '<div class="print-meta"><span>ভর্তির শ্রেণি: '+esc(a.class_name)+'</span><span>শিক্ষাবর্ষ: '+esc(a.academic_year||"—")+'</span><span class="print-number">আবেদন নম্বর: '+esc(a.application_no)+'</span></div>'+
-        '<div class="print-section">১. শিক্ষার্থীর তথ্য</div><div class="print-grid"><div class="print-fields">'+fields+'</div><div class="photo-box">শিক্ষার্থীর পাসপোর্ট সাইজ ছবি</div></div>'+
-        '<div class="print-section">২. পিতা-মাতা ও অভিভাবকের তথ্য</div><div class="print-fields">'+
-        pf("পিতার নাম",a.father_name)+pf("মাতার নাম",a.mother_name)+pf("অভিভাবকের নাম",a.guardian_name)+pf("অভিভাবকের পেশা",a.guardian_occupation)+
-        pf("মোবাইল নম্বর",a.phone)+pf("বিকল্প নম্বর",a.guardian_phone)+pf("ইমেইল",a.email,true)+'</div>'+
-        '<div class="print-section">৩. ঠিকানা ও পূর্ববর্তী শিক্ষাপ্রতিষ্ঠান</div><div class="print-fields">'+
-        pf("বর্তমান ঠিকানা",a.present_address||a.address,true)+pf("স্থায়ী ঠিকানা",a.permanent_address,true)+pf("পূর্ববর্তী বিদ্যালয়",a.previous_school)+pf("সর্বশেষ শ্রেণি",a.previous_class)+'</div>'+
-        '<div class="print-declaration">আমি ঘোষণা করছি যে, এই ফরমে প্রদত্ত সকল তথ্য সঠিক। প্রয়োজনে তথ্য যাচাইয়ের জন্য প্রয়োজনীয় কাগজপত্র জমা দিতে সম্মত আছি।</div>'+
-        '<div class="print-signatures"><div>শিক্ষার্থীর স্বাক্ষর</div><div>অভিভাবকের স্বাক্ষর</div><div>অফিস কর্তৃপক্ষের স্বাক্ষর ও সিল</div></div>'+
-        '<div class="print-foot">আবেদন নম্বর: '+esc(a.application_no)+' · তৈরির তারিখ: '+esc(new Date(a.created_at||Date.now()).toLocaleDateString("bn-BD"))+'</div></article>';
+        '<div class="print-title">'+L("ভর্তি আবেদন ফরম","ADMISSION APPLICATION FORM")+'</div>'+
+        '<div class="print-meta"><span>'+L("ভর্তির শ্রেণি: ","Admission Class: ")+esc(a.class_name)+'</span><span>'+L("শিক্ষাবর্ষ: ","Academic Year: ")+esc(a.academic_year||"—")+'</span><span class="print-number">'+L("আবেদন নম্বর: ","Application No.: ")+esc(a.application_no)+'</span></div>'+
+        '<div class="print-section">'+L("১. শিক্ষার্থীর তথ্য","1. STUDENT INFORMATION")+'</div><div class="print-grid"><div class="print-fields">'+fields+'</div><div class="photo-box">'+L("শিক্ষার্থীর পাসপোর্ট সাইজ ছবি","Student Passport Size Photo")+'</div></div>'+
+        '<div class="print-section">'+L("২. পিতা-মাতা ও অভিভাবকের তথ্য","2. PARENTS’ & GUARDIAN INFORMATION")+'</div><div class="print-fields">'+
+        pf(L("পিতার নাম","Father’s Name"),a.father_name)+pf(L("মাতার নাম","Mother’s Name"),a.mother_name)+pf(L("অভিভাবকের নাম","Guardian’s Name"),a.guardian_name)+pf(L("অভিভাবকের পেশা","Guardian’s Occupation"),a.guardian_occupation)+
+        pf(L("মোবাইল নম্বর","Mobile Number"),a.phone)+pf(L("বিকল্প নম্বর","Alternative Number"),a.guardian_phone)+pf("Email",a.email,true)+'</div>'+
+        '<div class="print-section">'+L("৩. ঠিকানা ও পূর্ববর্তী শিক্ষাপ্রতিষ্ঠান","3. ADDRESS & PREVIOUS INSTITUTION")+'</div><div class="print-fields">'+
+        pf(L("বর্তমান ঠিকানা","Present Address"),a.present_address||a.address,true)+pf(L("স্থায়ী ঠিকানা","Permanent Address"),a.permanent_address,true)+pf(L("পূর্ববর্তী বিদ্যালয়","Previous School"),a.previous_school)+pf(L("সর্বশেষ শ্রেণি","Last Attended Class"),a.previous_class)+'</div>'+
+        '<div class="print-declaration">'+L("আমি ঘোষণা করছি যে, এই ফরমে প্রদত্ত সকল তথ্য সঠিক। প্রয়োজনে তথ্য যাচাইয়ের জন্য প্রয়োজনীয় কাগজপত্র জমা দিতে সম্মত আছি।","I declare that all information provided in this application is correct. I agree to submit supporting documents for verification when required.")+'</div>'+
+        '<div class="print-signatures"><div>'+L("শিক্ষার্থীর স্বাক্ষর","Student’s Signature")+'</div><div>'+L("অভিভাবকের স্বাক্ষর","Parent / Guardian’s Signature")+'</div><div>'+L("অফিস কর্তৃপক্ষের স্বাক্ষর ও সিল","Authorized Signature & Seal")+'</div></div>'+
+        '<div class="print-foot">'+L("আবেদন নম্বর: ","Application No.: ")+esc(a.application_no)+' · '+L("তৈরির তারিখ: ","Generated: ")+esc(new Date(a.created_at||Date.now()).toLocaleDateString(en?"en-GB":"bn-BD"))+'</div></article>';
     printWindow("application",markup);
 }
 function printAdmitCard(a) {
