@@ -28,19 +28,19 @@
 <label class="label">Nagad Number (Optional)<input class="input mt-1" name="admission_nagad"></label>
 <label class="label">Rocket Number (Optional)<input class="input mt-1" name="admission_rocket"></label>
 <label class="label">Enable Online Payment<select class="input mt-1" name="admission_online_payment"><option value="false">Disabled</option><option value="true">Enabled</option></select></label>
-<label class="label">স্কুলে ফি জমা Enabled<select class="input mt-1" name="admission_school_payment"><option value="false">Disabled</option><option value="true">Enabled</option></select></label>
+<label class="label">Enable Payment at School<select class="input mt-1" name="admission_school_payment"><option value="false">Disabled</option><option value="true">Enabled</option></select></label>
 </div>
 <label class="label">Payment Instructions<textarea class="input mt-1 min-h-20" name="admission_payment_note"></textarea></label>
 <label class="label">Admission Exam Instructions<textarea class="input mt-1 min-h-24" name="admission_exam_instructions"></textarea></label>
 <div class="flex flex-wrap items-center gap-3"><button class="btn-primary" type="submit">Save Settings</button><span id="settingsMessage" class="text-sm text-slate-500" role="status"></span></div>
 </form></section>
 <section class="card space-y-4">
-<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">Admit Card Controls</h2><p class="text-sm text-slate-500">শুধু Accepted আবেদনকারীরা Admit Card পাবে। প্রত্যেক শিক্ষার্থীর জন্য আলাদাভাবে Enabled/Disabled করা যাবে।</p></div>
-<div class="flex flex-wrap gap-2"><button type="button" id="enableAll" class="btn-secondary btn-sm">সব অনুমোদিত এডমিট Enabled</button><button type="button" id="disableAll" class="btn-secondary btn-sm">সব এডমিট Disabled</button></div></div>
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">Admit Card Controls</h2><p class="text-sm text-slate-500">Only accepted applicants will receive an admit card. Admit cards can be enabled or disabled individually for each student.</p></div>
+<div class="flex flex-wrap gap-2"><button type="button" id="enableAll" class="btn-secondary btn-sm">Enable All Accepted Admit Cards</button><button type="button" id="disableAll" class="btn-secondary btn-sm">Disable All Admit Cards</button></div></div>
 <p class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">When the fee is 0, students with Accepted status and Admit Card enabled can print their admit cards without payment verification.</p>
 </section>
 <section class="card space-y-4">
-<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">Admission Applications</h2><p class="text-sm text-slate-500">Print each applicant's application form and admit card. You can also manage application approvals, payments, and admit card rolls.</p></div><a class="btn-primary" href="/api/admin/website/admissions/export.xlsx">Excel ডাউনলোড</a></div>
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">Admission Applications</h2><p class="text-sm text-slate-500">Print each applicant's application form and admit card. You can also manage application approvals, payments, and admit card rolls.</p></div><a class="btn-primary" href="/api/admin/website/admissions/export.xlsx">Download Excel</a></div>
 <div class="flex flex-wrap gap-3"><input id="admissionSearch" class="input min-w-56 flex-1" placeholder="Search by name, application number, phone, or class">
 <select id="statusFilter" class="input w-full sm:w-48"><option value="">All Applications</option><option>Pending</option><option>Reviewed</option><option>Accepted</option><option>Rejected</option><option>Waiting List</option></select>
 <button type="button" id="refreshAdmissions" class="btn-secondary">Refresh</button></div>
