@@ -3,7 +3,7 @@ const $ = (s) => document.querySelector(s);
 const form = $("#admissionForm");
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let school = { school_name: "শহীদ নূর হোসেন মেমোরিয়াল স্কুল", school_name_en: "Shaheed Nur Hossain Memorial School" };
-let language = "bn";
+let language = localStorage.getItem("snhms-language") === "en" ? "en" : "bn";
 let submittedApplication = null;
 const words = {
 bn: {
@@ -66,6 +66,7 @@ religionLabel:"Religion",nationalityLabel:"Nationality"
 function t(key){return words[language][key] || words.bn[key] || key;}
 function setLanguage(next) {
     language = next === "en" ? "en" : "bn";
+    localStorage.setItem("snhms-language", language);
     document.documentElement.lang = language;
     document.querySelectorAll("[data-i18n]").forEach((el) => { const key=el.dataset.i18n; if(words[language][key]) el.textContent=words[language][key]; });
     document.querySelectorAll("[data-ph]").forEach((el) => { const key=el.dataset.ph; if(words[language][key]) el.placeholder=words[language][key]; });
