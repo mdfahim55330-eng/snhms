@@ -103,11 +103,11 @@ function makePrintSheet(data) {
     $("#printSheet").innerHTML='<article class="print-page '+(en?'print-en':'')+'"><header class="print-head"><img class="print-logo" src="'+esc(school.logo_url||"/6716-removebg-preview.png")+'" alt="Logo"><div><h1>'+esc(schoolName)+'</h1><p class="en">'+esc(en?(school.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল"):(school.school_name_en||"Shaheed Nur Hossain Memorial School"))+'</p><p>'+esc(address)+(school.phone?' · '+esc(school.phone):'')+'</p><p>EIIN: '+esc(school.eiin||"—")+'</p></div><div></div></header>'+
     '<div class="print-title">'+(en?'ADMISSION APPLICATION FORM':'ভর্তি আবেদন ফরম / ADMISSION APPLICATION FORM')+'</div>'+
     '<div class="print-meta"><span>'+t("admissionClass")+': '+esc(data.class_name)+'</span><span>'+t("academicYear")+': '+esc(data.academic_year||new Date().getFullYear())+'</span><span class="print-number">'+t("applicationNo")+': '+esc(data.application_no)+'</span></div>'+
-    '<div class="print-section">১. '+t("studentInfo")+'</div><div class="print-grid"><div class="print-fields">'+fields+'</div><div class="photo-box">'+t("studentPhoto")+'</div></div>'+
-    '<div class="print-section">২. '+t("parentsInfo")+'</div><div class="print-fields">'+
+    '<div class="print-section">'+(en?'1. ':'১. ')+t("studentInfo")+'</div><div class="print-grid"><div class="print-fields">'+fields+'</div><div class="photo-box">'+t("studentPhoto")+'</div></div>'+
+    '<div class="print-section">'+(en?'2. ':'২. ')+t("parentsInfo")+'</div><div class="print-fields">'+
     printField(t("father"),data.father_name)+printField(t("mother"),data.mother_name)+printField(t("guardian"),data.guardian_name)+
     printField(t("guardianProfession"),data.guardian_occupation)+printField(t("mobile"),data.phone)+printField(t("alternativeMobile"),data.guardian_phone)+printField(t("emailLabel"),data.email,true)+'</div>'+
-    '<div class="print-section">৩. '+t("addressInfo")+'</div><div class="print-fields">'+
+    '<div class="print-section">'+(en?'3. ':'৩. ')+t("addressInfo")+'</div><div class="print-fields">'+
     printField(t("currentAddress"),data.present_address,true)+printField(t("permanent"),data.permanent_address,true)+
     printField(t("oldSchool"),data.previous_school)+printField(t("lastClass"),data.previous_class)+'</div>'+
     '<div class="print-declaration">'+t("printDeclaration")+'</div><div class="print-signatures"><div>'+t("studentSignature")+'</div><div>'+t("guardianSignature")+'</div><div>'+t("officeSignature")+'</div></div>'+
