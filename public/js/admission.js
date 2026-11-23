@@ -94,6 +94,7 @@ async function loadFormData() {
       const method=$("#paymentMethod");method.innerHTML="";
       if(school.admission_online_payment!=="false")method.add(new Option("অনলাইনে (বিকাশ/নগদ/রকেট)","online"));
       if(school.admission_school_payment!=="false")method.add(new Option("স্কুলে সরাসরি জমা","school"));
+      method.add(new Option("স্কুল অফিসে নগদ টাকা","cash"));
       $("#paymentInstructions").textContent=[school.admission_bkash&&"বিকাশ: "+school.admission_bkash,school.admission_nagad&&"নগদ: "+school.admission_nagad,school.admission_rocket&&"রকেট: "+school.admission_rocket,school.admission_payment_note].filter(Boolean).join(" | ");
       method.addEventListener("change",()=>{const online=method.value==="online";$("#transactionField").hidden=!online;form.elements.payment_transaction.required=online;});
       method.dispatchEvent(new Event("change"));
