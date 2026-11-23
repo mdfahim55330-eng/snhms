@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>আবেদনের অবস্থা ও অ্যাডমিট কার্ড</title><link rel="stylesheet" href="/css/admission.css"></head>
+<body><header class="page-top"><a href="/">← হোমপেজ</a><b>আবেদনের অবস্থা / Application Status</b><a href="/admission.html">ভর্তি আবেদন</a></header>
+<main class="container"><section class="intro"><div><h1>আবেদনের অবস্থা দেখুন</h1><p>Application ID এবং অভিভাবকের মোবাইল নম্বর দিন।</p></div></section>
+<form id="statusForm" class="application-form"><div class="fields"><label>Application ID<input name="application_no" required maxlength="20"></label><label>মোবাইল নম্বর<input name="phone" required inputmode="tel" maxlength="40"></label></div><button class="submit-btn" type="submit">অবস্থা দেখুন</button><p id="statusError" class="message error" hidden></p></form>
+<section id="statusResult" class="success-panel" hidden></section><div id="admitPrint" hidden></div></main><script src="/js/admission-status.js"></script></body></html>
