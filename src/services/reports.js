@@ -86,6 +86,16 @@ async function getExamReport(filters) {
         [className, examName, examYear]
     );
 
+    const exam = await db.one(
+        `SELECT id FROM exams WHERE class_name = ? AND exam_name = ? AND exam_year = ? LIMIT 1`,
+        [className, examName, examYear]
+    );
+    const notHeldRows = exam
+        ? await db.all(`SELECT subject_id FROM exam_not_held_subjects WHERE exam_id = ?`, [exam.id])
+        : [];
+    const notHeldIds = new Set(notHeldRows.map((row) => Number(row.subject_id)));
+    subjects.forEach((subject) => { subject.not_held = notHeldIds.has(Number(subject.id)); });
+
     const fourthRule = usesFourthSubjectRule(className);
     const subjectById = new Map(subjects.map((s) => [Number(s.id), s]));
     const byStudent = new Map();
@@ -191,7 +201,7 @@ function buildStatistics(report) {
     const toppers = topPosition ? students.filter((s) => s.position === 1) : [];
 
     const subjectStats = subjects.map((subject) => {
-        const entries = students
+        const entries = subject.not_held ? [] : students
             .filter((s) => s.marks[subject.id] !== undefined)
             .map((s) => ({ marks: s.marks[subject.id], grade: s.grades[subject.id] }));
         const appeared = entries.length;
@@ -203,6 +213,7 @@ function buildStatistics(report) {
             subject_code: subject.subject_code,
             full_marks: subject.full_marks,
             subject_type: subject.subject_type,
+            not_held: Boolean(subject.not_held),
             appeared,
             passed: appeared - failedHere,
             failed: failedHere,
