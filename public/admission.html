@@ -2,61 +2,50 @@
 <html lang="bn">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Online admission application - Shaheed Nur Hossain Memorial School">
+<meta name="description" content="Online admission application">
 <title>ভর্তি আবেদন | শহীদ নূর হোসেন মেমোরিয়াল স্কুল</title>
 <link rel="icon" href="/6716-removebg-preview.png"><link rel="stylesheet" href="/css/admission.css">
 </head>
 <body>
-<header class="page-top"><a href="/" class="back-link">← হোমপেজে ফিরে যান</a><span>অনলাইন ভর্তি আবেদন</span><a href="/pages/result-search.html">ফলাফল</a></header>
+<header class="page-top"><a href="/" data-i18n="home">← হোমপেজে ফিরে যান</a><span data-i18n="topTitle">অনলাইন ভর্তি আবেদন</span><a href="/pages/result-search.html" data-i18n="results">ফলাফল</a></header>
 <main class="container">
-<section class="intro"><div><p class="eyebrow">ADMISSION APPLICATION</p><h1>ভর্তি আবেদন ফরম</h1><p>সঠিক তথ্য দিয়ে ফরমটি পূরণ করে আবেদন জমা দিন। আবেদন নম্বর স্বয়ংক্রিয়ভাবে তৈরি হবে।</p></div><div class="intro-mark">A4<br><small>PRINT READY</small></div></section>
+<section class="intro"><div><p class="eyebrow">ADMISSION APPLICATION</p><h1 data-i18n="formTitle">ভর্তি আবেদন ফরম</h1><p data-i18n="introText">সঠিক তথ্য দিয়ে ফরমটি পূরণ করে আবেদন জমা দিন। আবেদন নম্বর স্বয়ংক্রিয়ভাবে তৈরি হবে।</p></div><div class="intro-mark">A4<br><small>PRINT READY</small></div></section>
 <div id="formError" class="message error" role="alert" hidden></div>
 <form id="admissionForm" class="application-form">
+<div class="language-row"><span data-i18n="chooseLanguage">ভাষা নির্বাচন করুন</span><div class="language-switch" role="group" aria-label="Language"><button type="button" class="language-btn active" data-lang="bn" aria-pressed="true">বাংলা</button><button type="button" class="language-btn" data-lang="en" aria-pressed="false">English</button></div></div>
 <section class="form-section">
-<h2><span>১</span> শিক্ষার্থীর তথ্য</h2>
+<h2><span>১</span> <b data-i18n="studentSection">শিক্ষার্থীর তথ্য</b></h2>
 <div class="fields">
-<label>শিক্ষার্থীর নাম (বাংলা) *<input name="student_name" required maxlength="160" placeholder="বাংলায় পূর্ণ নাম"></label>
-<label>Student Name (English)<input name="student_name_en" maxlength="160" placeholder="Full name in English"></label>
-<label>ভর্তির শ্রেণি *<select name="class_name" id="className" required><option value="">শ্রেণি নির্বাচন করুন</option></select></label>
-<label>শিক্ষাবর্ষ<select name="academic_year" id="academicYear"><option value="">নির্বাচন করুন</option></select></label>
-<label>শাখা / বিভাগ<input name="group_name" maxlength="60" placeholder="প্রযোজ্য হলে"></label>
-<label>জন্মতারিখ *<input type="date" name="birth_date" required></label>
-<label>জন্ম নিবন্ধন নম্বর<input name="birth_reg_no" maxlength="40" inputmode="numeric"></label>
-<label>লিঙ্গ *<select name="gender" required><option value="">নির্বাচন করুন</option><option value="ছেলে">ছেলে</option><option value="মেয়ে">মেয়ে</option><option value="অন্যান্য">অন্যান্য</option></select></label>
-<label>ধর্ম<input name="religion" maxlength="40" placeholder="ধর্ম"></label>
-<label>জাতীয়তা<input name="nationality" value="বাংলাদেশী" maxlength="60"></label>
-</div>
-</section>
-<section class="form-section">
-<h2><span>২</span> পিতা-মাতা ও অভিভাবকের তথ্য</h2>
-<div class="fields">
-<label>পিতার নাম *<input name="father_name" required maxlength="160"></label>
-<label>মাতার নাম *<input name="mother_name" required maxlength="160"></label>
-<label>অভিভাবকের নাম (পিতা/মাতা ছাড়া হলে)<input name="guardian_name" maxlength="160"></label>
-<label>অভিভাবকের পেশা<input name="guardian_occupation" maxlength="100"></label>
-<label>অভিভাবকের মোবাইল নম্বর *<input name="phone" required maxlength="40" inputmode="tel" placeholder="01XXXXXXXXX"></label>
-<label>বিকল্প মোবাইল নম্বর<input name="guardian_phone" maxlength="40" inputmode="tel"></label>
-<label class="full">ইমেইল ঠিকানা<input name="email" type="email" maxlength="160" placeholder="example@email.com"></label>
-</div>
-</section>
-<section class="form-section">
-<h2><span>৩</span> ঠিকানা ও পূর্ববর্তী শিক্ষাপ্রতিষ্ঠান</h2>
-<div class="fields">
-<label class="full">বর্তমান ঠিকানা *<textarea name="present_address" required rows="2" maxlength="1000"></textarea></label>
-<label class="full">স্থায়ী ঠিকানা<textarea name="permanent_address" rows="2" maxlength="1000"></textarea></label>
-<label>পূর্ববর্তী বিদ্যালয়ের নাম<input name="previous_school" maxlength="180"></label>
-<label>সর্বশেষ অধ্যয়নকৃত শ্রেণি<input name="previous_class" maxlength="60"></label>
-</div>
-</section>
-<label class="declaration"><input type="checkbox" name="declaration" required><span>আমি ঘোষণা করছি যে, উপরে দেওয়া সকল তথ্য আমার জানা মতে সঠিক। ভুল তথ্য প্রদান করলে কর্তৃপক্ষ আবেদন বাতিল করতে পারবেন।</span></label>
-<div class="form-actions"><button class="submit-btn" type="submit" id="submitButton">আবেদন জমা দিন</button><button class="reset-btn" type="reset">ফরম মুছুন</button><span id="submitStatus" role="status"></span></div>
+<label><span data-i18n="studentBn">শিক্ষার্থীর নাম (বাংলা) *</span><input name="student_name" required maxlength="160" placeholder="বাংলায় পূর্ণ নাম" data-ph="studentBnPh"></label>
+<label><span data-i18n="studentEn">Student Name (English)</span><input name="student_name_en" maxlength="160" placeholder="Full name in English" data-ph="studentEnPh"></label>
+<label><span data-i18n="class">ভর্তির শ্রেণি *</span><select name="class_name" id="className" required><option value="" data-i18n="selectClass">শ্রেণি নির্বাচন করুন</option></select></label>
+<label><span data-i18n="year">শিক্ষাবর্ষ</span><select name="academic_year" id="academicYear"><option value="" data-i18n="select">নির্বাচন করুন</option></select></label>
+<label><span data-i18n="group">শাখা / বিভাগ</span><input name="group_name" maxlength="60" placeholder="প্রযোজ্য হলে" data-ph="optional"></label>
+<label><span data-i18n="birthDate">জন্মতারিখ *</span><input type="date" name="birth_date" required></label>
+<label><span data-i18n="birthReg">জন্ম নিবন্ধন নম্বর</span><input name="birth_reg_no" maxlength="40" inputmode="numeric"></label>
+<label><span data-i18n="gender">লিঙ্গ *</span><select name="gender" required><option value="" data-i18n="select">নির্বাচন করুন</option><option value="ছেলে" data-i18n="boy">ছেলে</option><option value="মেয়ে" data-i18n="girl">মেয়ে</option><option value="অন্যান্য" data-i18n="other">অন্যান্য</option></select></label>
+<label><span data-i18n="religion">ধর্ম</span><input name="religion" maxlength="40" placeholder="ধর্ম" data-ph="religion"></label>
+<label><span data-i18n="nationality">জাতীয়তা</span><input name="nationality" value="বাংলাদেশী" maxlength="60"></label>
+</div></section>
+<section class="form-section"><h2><span>২</span> <b data-i18n="parentSection">পিতা-মাতা ও অভিভাবকের তথ্য</b></h2><div class="fields">
+<label><span data-i18n="father">পিতার নাম *</span><input name="father_name" required maxlength="160"></label>
+<label><span data-i18n="mother">মাতার নাম *</span><input name="mother_name" required maxlength="160"></label>
+<label><span data-i18n="guardian">অভিভাবকের নাম (পিতা/মাতা ছাড়া হলে)</span><input name="guardian_name" maxlength="160"></label>
+<label><span data-i18n="occupation">অভিভাবকের পেশা</span><input name="guardian_occupation" maxlength="100"></label>
+<label><span data-i18n="phone">অভিভাবকের মোবাইল নম্বর *</span><input name="phone" required maxlength="40" inputmode="tel" placeholder="01XXXXXXXXX"></label>
+<label><span data-i18n="altPhone">বিকল্প মোবাইল নম্বর</span><input name="guardian_phone" maxlength="40" inputmode="tel"></label>
+<label class="full"><span data-i18n="email">ইমেইল ঠিকানা</span><input name="email" type="email" maxlength="160" placeholder="example@email.com"></label>
+</div></section>
+<section class="form-section"><h2><span>৩</span> <b data-i18n="addressSection">ঠিকানা ও পূর্ববর্তী শিক্ষাপ্রতিষ্ঠান</b></h2><div class="fields">
+<label class="full"><span data-i18n="presentAddress">বর্তমান ঠিকানা *</span><textarea name="present_address" required rows="2" maxlength="1000"></textarea></label>
+<label class="full"><span data-i18n="permanentAddress">স্থায়ী ঠিকানা</span><textarea name="permanent_address" rows="2" maxlength="1000"></textarea></label>
+<label><span data-i18n="previousSchool">পূর্ববর্তী বিদ্যালয়ের নাম</span><input name="previous_school" maxlength="180"></label>
+<label><span data-i18n="previousClass">সর্বশেষ অধ্যয়নকৃত শ্রেণি</span><input name="previous_class" maxlength="60"></label>
+</div></section>
+<label class="declaration"><input type="checkbox" name="declaration" required><span data-i18n="declaration">আমি ঘোষণা করছি যে, উপরে দেওয়া সকল তথ্য আমার জানা মতে সঠিক। ভুল তথ্য প্রদান করলে কর্তৃপক্ষ আবেদন বাতিল করতে পারবেন।</span></label>
+<div class="form-actions"><button class="submit-btn" type="submit" id="submitButton" data-i18n="submit">আবেদন জমা দিন</button><button class="reset-btn" type="reset" data-i18n="reset">ফরম মুছুন</button><span id="submitStatus" role="status"></span></div>
 </form>
-<section id="successPanel" class="success-panel" hidden>
-<div class="success-icon">✓</div><div><h2>আবেদন সফলভাবে জমা হয়েছে</h2><p>আপনার আবেদন নম্বর সংরক্ষণ করুন এবং A4 ফরমটি প্রিন্ট করুন।</p><strong id="applicationNumber"></strong></div>
-<div class="success-actions"><button id="printButton" class="submit-btn" type="button">আবেদন ফরম প্রিন্ট করুন</button><button id="newApplication" class="reset-btn" type="button">নতুন আবেদন</button></div>
-</section>
-</main>
-<div id="printSheet" aria-hidden="true"></div>
-<footer>© <span id="footerYear"></span> শহীদ নূর হোসেন মেমোরিয়াল স্কুল</footer>
+<section id="successPanel" class="success-panel" hidden><div class="success-icon">✓</div><div><h2 data-i18n="successTitle">আবেদন সফলভাবে জমা হয়েছে</h2><p data-i18n="successText">আপনার আবেদন নম্বর সংরক্ষণ করুন এবং A4 ফরমটি প্রিন্ট করুন।</p><strong id="applicationNumber"></strong></div><div class="success-actions"><button id="printButton" class="submit-btn" type="button" data-i18n="print">আবেদন ফরম প্রিন্ট করুন</button><button id="newApplication" class="reset-btn" type="button" data-i18n="newApp">নতুন আবেদন</button></div></section>
+</main><div id="printSheet" aria-hidden="true"></div><footer>© <span id="footerYear"></span> <span data-i18n="schoolName">শহীদ নূর হোসেন মেমোরিয়াল স্কুল</span></footer>
 <script src="/js/admission.js"></script>
 </body></html>
