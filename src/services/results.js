@@ -37,24 +37,32 @@ async function lookupPublished({ roll, class_name, exam_name, exam_year }) {
 
 /** Full marksheet data for one student row (same JSON shape the pages already use). */
 async function buildResultData(student) {
+    const exam = await db.one(
+        `SELECT id FROM exams WHERE class_name = ? AND exam_name = ? AND exam_year = ? LIMIT 1`,
+        [student.class_name, student.exam_name, Number(student.exam_year)]
+    );
     const subjects = await db.all(
-        `SELECT results.id, results.marks, results.grade, results.grade_point, results.is_fourth_subject,
-                subjects.subject_name, subjects.subject_code, subjects.full_marks, subjects.subject_type
-         FROM results
-         INNER JOIN subjects ON results.subject_id = subjects.id
-         WHERE results.student_id = ?
+        `SELECT subjects.id AS subject_id, results.id, results.marks, results.grade, results.grade_point,
+                results.is_fourth_subject, subjects.subject_name, subjects.subject_code,
+                subjects.full_marks, subjects.subject_type,
+                CASE WHEN nh.subject_id IS NOT NULL THEN TRUE ELSE FALSE END AS not_held
+         FROM subjects
+         LEFT JOIN results ON results.subject_id = subjects.id AND results.student_id = ?
+         LEFT JOIN exam_not_held_subjects nh ON nh.subject_id = subjects.id AND nh.exam_id = ?
+         WHERE subjects.class_name = ?
          ORDER BY subjects.id ASC`,
-        [student.id]
+        [student.id, exam ? exam.id : 0, student.class_name]
     );
 
     let totalMarks = 0;
     let totalFullMarks = 0;
     subjects.forEach((s) => {
+        if (s.not_held || s.marks === null || s.marks === undefined) return;
         totalMarks += Number(s.marks || 0);
         totalFullMarks += Number(s.full_marks || 0);
     });
 
-    const final = calculateFinalGPA(subjects);
+    const final = calculateFinalGPA(subjects.filter((s) => !s.not_held && s.marks !== null && s.marks !== undefined));
 
     // position inside the whole class (cached, so many people can search at once)
     const report = await cache.remember(
@@ -67,6 +75,10 @@ async function buildResultData(student) {
     );
     const me = report.students.find((s) => s.id === student.id);
     const position = me && me.position !== null ? me.position : "-";
+
+    const displayedSubjects = subjects.map((subject) => subject.not_held
+        ? { ...subject, marks: null, grade: "N/A", grade_point: null, display_marks: "N/A" }
+        : { ...subject, display_marks: subject.marks });
 
     return {
         student: {
@@ -82,7 +94,7 @@ async function buildResultData(student) {
             eiin: student.eiin || config.school.eiin || null
         },
         school: config.school,
-        subjects,
+        subjects: displayedSubjects,
         summary: {
             total_marks: totalMarks,
             total_full_marks: totalFullMarks,
