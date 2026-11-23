@@ -119,6 +119,14 @@ async function migrate() {
             )`);
 
         await client.query(`
+            CREATE TABLE IF NOT EXISTS exam_not_held_subjects (
+                exam_id INTEGER NOT NULL REFERENCES exams(id) ON DELETE CASCADE,
+                subject_id INTEGER NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (exam_id, subject_id)
+            )`);
+
+        await client.query(`
             CREATE TABLE IF NOT EXISTS admins (
                 id SERIAL PRIMARY KEY,
                 username TEXT NOT NULL UNIQUE,
