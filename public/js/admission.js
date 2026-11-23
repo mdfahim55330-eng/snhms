@@ -149,7 +149,7 @@ async function printAdmissionForm(){
     document.body.classList.add("printing-admission");
     const logo=document.querySelector("#printSheet .print-logo");
     if(logo){
-      logo.src="https://raw.githubusercontent.com/mdfahim55330-eng/snhms/main/public/6716-removebg-preview.png";
+      logo.src="/6716-removebg-preview.png?v=logo-fix-20261123";
       logo.loading="eager"; logo.decoding="sync";
       if(!logo.complete) await new Promise(resolve=>{logo.onload=resolve;logo.onerror=resolve;});
     }
