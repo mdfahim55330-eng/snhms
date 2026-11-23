@@ -11,7 +11,13 @@
 <main class="container">
 <section class="intro"><div><p class="eyebrow">ADMISSION APPLICATION</p><h1 data-i18n="formTitle">ভর্তি আবেদন ফরম</h1><p data-i18n="introText">সঠিক তথ্য দিয়ে ফরমটি পূরণ করে আবেদন জমা দিন। আবেদন নম্বর স্বয়ংক্রিয়ভাবে তৈরি হবে।</p></div><div class="intro-mark">A4<br><small>PRINT READY</small></div></section>
 <div id="formError" class="message error" role="alert" hidden></div><div class="language-row"><span data-i18n="chooseLanguage">ভাষা নির্বাচন করুন</span><div class="language-switch" role="group" aria-label="Language"><button type="button" class="language-btn active" data-lang="bn" aria-pressed="true">বাংলা</button><button type="button" class="language-btn" data-lang="en" aria-pressed="false">English</button></div></div>
+<p class="form-status-link"><a href="/admission-status.html">আবেদনের অবস্থা / অ্যাডমিট কার্ড দেখুন</a></p>
 <form id="admissionForm" class="application-form">
+<div id="admissionFeeInfo" class="fee-info" hidden></div>
+<section class="form-section" id="paymentSection" hidden><h2><b>আবেদন ফি ও পেমেন্ট</b></h2><div class="fields">
+<label>পেমেন্ট পদ্ধতি<select name="payment_method" id="paymentMethod"><option value="online">অনলাইনে (বিকাশ/নগদ/রকেট)</option><option value="school">স্কুলে সরাসরি জমা</option></select></label>
+<label id="transactionField">Transaction ID *<input name="payment_transaction" maxlength="120"></label>
+<div class="full" id="paymentInstructions"></div></div></section>
 
 <section class="form-section">
 <h2><span>১</span> <b data-i18n="studentSection">শিক্ষার্থীর তথ্য</b></h2>
