@@ -15,7 +15,7 @@ async function api(url, options = {}) {
         : { "Content-Type": "application/json", ...(options.headers || {}) };
     const response = await fetch(url, { ...options, headers, credentials: "same-origin" });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "কাজটি করা যায়নি");
+    if (!response.ok) throw new Error(data.message || "The operation could not be completed.");
     return data;
 }
 
@@ -44,24 +44,24 @@ function renderItems(key, items) {
             item.content || item.file_url || item.url || "";
         const menuEdit = key === "menu"
             ? '<button class="btn-secondary btn-sm" data-edit="menu" data-id="' + esc(item.id) +
-              '" data-label="' + esc(item.label) + '" data-url="' + esc(item.url) + '">সম্পাদনা</button>'
+              '" data-label="' + esc(item.label) + '" data-url="' + esc(item.url) + '">Edit</button>'
             : "";
         return '<article class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 py-3">' +
             '<div class="min-w-0"><b class="text-sm text-slate-900">' + esc(title) + '</b><p class="mt-1 break-words text-xs text-slate-500">' +
             esc(detail) + "</p></div><div class=\"flex flex-wrap gap-2\">" +
-            '<button class="btn-secondary btn-sm" data-edit-en="' + key + '" data-id="' + esc(item.id) + '">English সম্পাদনা</button>' +
+            '<button class="btn-secondary btn-sm" data-edit-en="' + key + '" data-id="' + esc(item.id) + '">English Edit</button>' +
             menuEdit +
-            '<button class="btn-danger btn-sm" data-delete="' + key + '" data-id="' + esc(item.id) + '">মুছুন</button></div></article>';
-    }).join("") || '<p class="py-4 text-sm text-slate-400">কোনো তথ্য নেই।</p>';
+            '<button class="btn-danger btn-sm" data-delete="' + key + '" data-id="' + esc(item.id) + '">Delete</button></div></article>';
+    }).join("") || '<p class="py-4 text-sm text-slate-400">No information available.</p>';
 }
 
 function renderAdmissions(admissions, summary) {
     const stats = [
-        ["মোট আবেদন", summary.total, "bg-brand-100 text-brand-700"],
-        ["অপেক্ষমাণ", summary.pending, "bg-amber-100 text-amber-700"],
-        ["পর্যালোচিত", summary.reviewed, "bg-violet-100 text-violet-700"],
-        ["গৃহীত", summary.accepted, "bg-emerald-100 text-emerald-700"],
-        ["বাতিল", summary.rejected, "bg-red-100 text-red-700"]
+        ["Total Applications", summary.total, "bg-brand-100 text-brand-700"],
+        ["Pending", summary.pending, "bg-amber-100 text-amber-700"],
+        ["Reviewed", summary.reviewed, "bg-violet-100 text-violet-700"],
+        ["Accepted", summary.accepted, "bg-emerald-100 text-emerald-700"],
+        ["Rejected", summary.rejected, "bg-red-100 text-red-700"]
     ];
     $("#admission-summary").innerHTML = stats.map(([label, count, tone]) =>
         '<article class="card flex items-center gap-3 !p-4"><div class="flex h-10 w-10 items-center justify-center rounded-xl ' +
@@ -69,7 +69,7 @@ function renderAdmissions(admissions, summary) {
         label + '</p><p class="text-2xl font-bold text-slate-900">' + esc(count) + "</p></div></article>"
     ).join("");
 
-    const statusLabels = { Pending: "অপেক্ষমাণ", Reviewed: "পর্যালোচিত", Accepted: "গৃহীত", Rejected: "বাতিল" };
+    const statusLabels = { Pending: "Pending", Reviewed: "Reviewed", Accepted: "Accepted", Rejected: "Rejected" };
     $("#list-admissions").innerHTML = admissions.map((item) =>
         "<tr><td>" + esc(item.application_no || String(item.id).padStart(6, "0")) + '</td><td class="font-semibold text-slate-900">' + esc(item.student_name) +
         (item.student_name_en ? '<small class="block text-slate-500">' + esc(item.student_name_en) + '</small>' : "") +
@@ -78,7 +78,7 @@ function renderAdmissions(admissions, summary) {
         esc(item.id) + '">' + Object.entries(statusLabels).map(([status, label]) =>
             '<option value="' + status + '"' + (item.status === status ? " selected" : "") + ">" + label + "</option>"
         ).join("") + "</select></td></tr>"
-    ).join("") || '<tr><td colspan="7" class="px-3 py-10 text-center text-sm text-slate-400">এখনও কোনো ভর্তি আবেদন জমা হয়নি।</td></tr>';
+    ).join("") || '<tr><td colspan="7" class="px-3 py-10 text-center text-sm text-slate-400">No admission applications have been submitted yet.</td></tr>';
 }
 
 async function refresh() {
@@ -100,8 +100,8 @@ async function refresh() {
         '<article class="border-t border-slate-100 py-3"><div class="flex flex-wrap items-start justify-between gap-3"><div>' +
         '<b class="text-sm text-slate-900">' + esc(item.subject || item.name) + '</b><p class="mt-1 text-xs text-slate-500">' +
         esc(item.name) + " · " + esc(item.phone) + " · " + esc(item.email) + '</p><p class="mt-2 text-sm text-slate-700">' +
-        esc(item.message) + '</p></div><button class="btn-secondary btn-sm" data-read="' + esc(item.id) + '">পড়া হয়েছে</button></div></article>'
-    ).join("") || '<p class="py-4 text-sm text-slate-400">কোনো বার্তা নেই।</p>';
+        esc(item.message) + '</p></div><button class="btn-secondary btn-sm" data-read="' + esc(item.id) + '">Mark as Read</button></div></article>'
+    ).join("") || '<p class="py-4 text-sm text-slate-400">No messages available.</p>';
 
     const settingsForm = $("#settingsForm");
     for (const setting of data.site_settings || []) {
@@ -157,7 +157,7 @@ document.querySelectorAll("form[data-resource]").forEach((form) => {
             });
             form.reset();
             await refresh();
-            $("#globalMsg").textContent = "তথ্য সংরক্ষণ হয়েছে।";
+            $("#globalMsg").textContent = "Information saved successfully.";
         } catch (error) {
             $("#globalMsg").textContent = error.message;
         } finally {
@@ -203,9 +203,9 @@ document.addEventListener("click", async (event) => {
 
     const menuEdit = event.target.closest('[data-edit="menu"]');
     if (menuEdit) {
-        const label = prompt("মেনুর নাম", menuEdit.dataset.label);
+        const label = prompt("Menu Label", menuEdit.dataset.label);
         if (label === null) return;
-        const url = prompt("লিংক / URL", menuEdit.dataset.url);
+        const url = prompt("Link / URL", menuEdit.dataset.url);
         if (url === null) return;
         try {
             await api("/api/admin/website/menu/" + menuEdit.dataset.id, {
@@ -213,7 +213,7 @@ document.addEventListener("click", async (event) => {
                 body: JSON.stringify({ label, url })
             });
             await refresh();
-            $("#globalMsg").textContent = "মেনু লিংক আপডেট হয়েছে।";
+            $("#globalMsg").textContent = "Menu link updated successfully.";
         } catch (error) {
             alert(error.message);
         }
@@ -221,9 +221,9 @@ document.addEventListener("click", async (event) => {
     }
 
     const deleteButton = event.target.closest("[data-delete]");
-    if (deleteButton && await App.confirm("তথ্য মুছুন", "এই তথ্যটি স্থায়ীভাবে মুছে ফেলবেন?", {
+    if (deleteButton && await App.confirm("তথ্য Delete", "Are you sure you want to permanently delete this information?", {
         danger: true,
-        confirmText: "মুছুন"
+        confirmText: "Delete"
     })) {
         try {
             await api("/api/admin/website/" + deleteButton.dataset.delete + "/" + deleteButton.dataset.id, {
