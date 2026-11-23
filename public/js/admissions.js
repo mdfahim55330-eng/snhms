@@ -20,7 +20,7 @@ function renderRows() {
     const q = ($("#admissionSearch").value || "").trim().toLowerCase(), status = $("#statusFilter").value;
     const rows = applications.filter(a => (!q || [a.application_no,a.student_name,a.student_name_en,a.phone,a.class_name].join(" ").toLowerCase().includes(q)) && (!status || a.status === status));
     $("#admissionRows").innerHTML = rows.map(a => '<tr><td><b>'+esc(a.application_no)+'</b><span class="block text-xs text-slate-500">'+esc(a.student_name)+'</span></td><td>'+esc(a.class_name)+'<span class="block text-xs text-slate-500">'+esc(a.phone)+'</span></td><td><select class="input min-w-32" data-field="status">'+
-    ["Pending","Reviewed","Accepted","Rejected","Waiting List"].map(s=>'<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+({"Pending":"Pending","Reviewed":"Reviewed","Accepted":"Accepted","Rejected":"Rejected","Waiting List":"Pending তালিকা"}[s])+'</option>').join("")+
+    ["Pending","Reviewed","Accepted","Rejected","Waiting List"].map(s=>'<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+({"Pending":"Pending","Reviewed":"Reviewed","Accepted":"Accepted","Rejected":"Rejected","Waiting List":"Waiting List"}[s])+'</option>').join("")+
     '</select></td><td><select class="input min-w-32" data-field="payment_status">'+
     ["Not Required","Pending","Verified","Rejected"].map(s=>'<option value="'+s+'" '+((a.payment_status||"Not Required")===s?'selected':'')+'>'+({"Not Required":"Not Required","Pending":"Pending","Verified":"Verified","Rejected":"Rejected"}[s])+'</option>').join("")+
     '</select></td><td><input class="input min-w-24" data-field="admit_roll" value="'+esc(a.admit_roll||"")+'" placeholder="Roll No."></td><td><label class="flex items-center gap-2 text-sm"><input type="checkbox" data-field="admit_card_enabled" '+(a.admit_card_enabled?'checked':'')+'> Enabled</label></td><td><input class="input min-w-36" data-field="admin_note" value="'+esc(a.admin_note||"")+'" placeholder="Note"></td><td><button class="btn-primary btn-sm" data-save="'+esc(a.id)+'">Save</button></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-print-application="'+esc(a.id)+'">Application Form</button><button type="button" class="btn-secondary btn-sm" data-print-admit="'+esc(a.id)+'">Admit Card</button></div></td></tr>').join("") || '<tr><td colspan="9" class="py-10 text-center text-slate-400">No applications found.</td></tr>';
@@ -55,7 +55,7 @@ function printApplication(a) {
     const fields = [
         pf(L("শিক্ষার্থীর নাম (বাংলা)","Student Name (Bangla)"),a.student_name,true),
         pf(L("শিক্ষার্থীর নাম (ইংরেজি)","Student Name (English)"),a.student_name_en,true),
-        pf(L("জন্মতারিখ","Date of Birth"),a.birth_date),pf(L("জন্ম নিDisabledন নং","Birth Registration No."),a.birth_reg_no),
+        pf(L("জন্মতারিখ","Date of Birth"),a.birth_date),pf(L("Birth Registration No.","Birth Registration No."),a.birth_reg_no),
         pf(L("লিঙ্গ","Gender"),a.gender),pf(L("ধর্ম","Religion"),a.religion),
         pf(L("জাতীয়তা","Nationality"),a.nationality),pf(L("শাখা/বিভাগ","Section / Group"),a.group_name)
     ].join("");
@@ -118,7 +118,7 @@ $("#admissionSettings").addEventListener("submit", async e => {
     try {
         if (!Number.isFinite(Number(data.admission_fee)) || Number(data.admission_fee) < 0) throw new Error("Please enter a valid application fee.");
         const result = await call("/api/admin/website/settings",{method:"PUT",json:data});
-        message($("#settingsMessage"),result.message || "সেটিংস Save হয়েছে।");
+        message($("#settingsMessage"),result.message || "Settings saved successfully.");
     } catch(err) { message($("#settingsMessage"),err.message,true); }
 });
 $("#admissionRows").addEventListener("click", async e => {
@@ -138,21 +138,21 @@ $("#admissionRows").addEventListener("click", async e => {
     if (!btn) return;
     const row = btn.closest("tr"), data = {};
     row.querySelectorAll("[data-field]").forEach(el => { data[el.dataset.field] = el.type === "checkbox" ? el.checked : el.value; });
-    btn.disabled = true; btn.textContent = "Save হচ্ছে...";
+    btn.disabled = true; btn.textContent = "Saving...";
     try {
         await call("/api/admin/website/admissions/"+btn.dataset.save,{method:"PUT",json:data});
-        message($("#pageMessage"),"আবেদন ও Admit Cardের সেটিংস Save হয়েছে।");
+        message($("#pageMessage"),"আবেদন ও Admit Cardের Settings saved successfully.");
         await refresh();
     } catch(err) { message($("#pageMessage"),err.message,true); }
     finally { btn.disabled = false; btn.textContent = "Save"; }
 });
 async function bulkAdmit(enabled) {
     const targets = applications.filter(a => a.status === "Accepted");
-    if (!targets.length) { message($("#pageMessage"),"এখনো কোনো Accepted আবেদন নেই।",true); return; }
-    if (!confirm(targets.length+" জন Accepted শিক্ষার্থীর Admit Card "+(enabled?"Enabled":"Disabled")+" ?")) return;
+    if (!targets.length) { message($("#pageMessage"),"There are no accepted applications yet.",true); return; }
+    if (!confirm(targets.length+" accepted students’ admit cards "+(enabled?"Enabled":"Disabled")+" ?")) return;
     try {
         for (const a of targets) await call("/api/admin/website/admissions/"+a.id,{method:"PUT",json:{admit_card_enabled:enabled}});
-        message($("#pageMessage"),"Accepted শিক্ষার্থীদের Admit Card "+(enabled?"Enabled":"Disabled")+" successfully updated.");
+        message($("#pageMessage"),"Accepted students’ admit cards "+(enabled?"Enabled":"Disabled")+" successfully updated.");
         await refresh();
     } catch(err) { message($("#pageMessage"),err.message,true); }
 }
