@@ -42,7 +42,7 @@ form.addEventListener("submit",async e=>{
  }catch(ex){err.textContent=ex.message||t("error");err.hidden=false;}
  finally{btn.disabled=false;btn.querySelector("[data-i18n]").textContent=t("check");}
 });
-function printCard(a,x){
+async function printCard(a,x){
  const en=language==="en",schoolName=en?(school.school_name_en||"Shaheed Nur Hossain Memorial School"):(school.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল");
  const logo=school.logo_url||"/6716-removebg-preview.png";
  const fields=[[t("student"),a.student_name],[t("application"),a.application_no],[t("class"),a.class_name],[t("examRoll"),a.admit_roll||a.application_no],[t("year"),a.academic_year],[t("date"),x.exam_date],[t("time"),x.exam_time],[t("center"),x.center]];
