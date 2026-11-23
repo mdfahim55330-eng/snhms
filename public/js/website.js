@@ -71,8 +71,9 @@ function renderAdmissions(admissions, summary) {
 
     const statusLabels = { Pending: "অপেক্ষমাণ", Reviewed: "পর্যালোচিত", Accepted: "গৃহীত", Rejected: "বাতিল" };
     $("#list-admissions").innerHTML = admissions.map((item) =>
-        "<tr><td>" + esc(item.id) + '</td><td class="font-semibold text-slate-900">' + esc(item.student_name) +
-        "</td><td>" + esc(item.guardian_name) + "</td><td>" + esc(item.class_name) + "</td><td>" +
+        "<tr><td>" + esc(item.application_no || String(item.id).padStart(6, "0")) + '</td><td class="font-semibold text-slate-900">' + esc(item.student_name) +
+        (item.student_name_en ? '<small class="block text-slate-500">' + esc(item.student_name_en) + '</small>' : "") +
+        "</td><td>" + esc([item.father_name, item.mother_name].filter(Boolean).join(" / ") || item.guardian_name) + "</td><td>" + esc(item.class_name) + "</td><td>" +
         esc(item.phone) + "</td><td>" + esc(App.fmtDate(item.created_at)) + '</td><td><select class="input min-w-32" data-admission="' +
         esc(item.id) + '">' + Object.entries(statusLabels).map(([status, label]) =>
             '<option value="' + status + '"' + (item.status === status ? " selected" : "") + ">" + label + "</option>"
