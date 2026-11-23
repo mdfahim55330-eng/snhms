@@ -26,11 +26,11 @@ function assignPositions(students) {
         .filter((student) => student.result_status === "Pass")
         .slice()
         .sort((a, b) => {
-            const gpaDifference = round2(b.final_gpa) - round2(a.final_gpa);
-            if (gpaDifference !== 0) return gpaDifference;
-
             const marksDifference = round2(b.total_marks) - round2(a.total_marks);
             if (marksDifference !== 0) return marksDifference;
+
+            const gpaDifference = round2(b.final_gpa) - round2(a.final_gpa);
+            if (gpaDifference !== 0) return gpaDifference;
 
             return compareRoll(a.roll, b.roll);
         });
