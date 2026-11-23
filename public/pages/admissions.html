@@ -40,12 +40,12 @@
 <p class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">ফি ০ হলে পেমেন্ট যাচাই ছাড়াই Accepted এবং Admit Card ON থাকা শিক্ষার্থী এডমিট কার্ড প্রিন্ট করতে পারবে।</p>
 </section>
 <section class="card space-y-4">
-<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">ভর্তি আবেদনসমূহ</h2><p class="text-sm text-slate-500">আবেদন অনুমোদন, পেমেন্ট অবস্থা, এডমিট রোল এবং এডমিট কার্ড নিয়ন্ত্রণ করুন।</p></div><a class="btn-primary" href="/api/admin/website/admissions/export.xlsx">Excel ডাউনলোড</a></div>
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="card-title">ভর্তি আবেদনসমূহ</h2><p class="text-sm text-slate-500">সব আবেদনকারীর আবেদন ফরম ও এডমিট কার্ড প্রিন্ট করুন; পাশাপাশি আবেদন অনুমোদন, পেমেন্ট এবং এডমিট রোল নিয়ন্ত্রণ করুন।</p></div><a class="btn-primary" href="/api/admin/website/admissions/export.xlsx">Excel ডাউনলোড</a></div>
 <div class="flex flex-wrap gap-3"><input id="admissionSearch" class="input min-w-56 flex-1" placeholder="নাম, আবেদন নম্বর, ফোন বা শ্রেণি দিয়ে খুঁজুন">
 <select id="statusFilter" class="input w-full sm:w-48"><option value="">সব আবেদন</option><option>Pending</option><option>Reviewed</option><option>Accepted</option><option>Rejected</option><option>Waiting List</option></select>
 <button type="button" id="refreshAdmissions" class="btn-secondary">রিফ্রেশ</button></div>
-<div class="table-wrap"><table class="table min-w-[1050px]"><thead><tr><th>আবেদন নং / শিক্ষার্থী</th><th>শ্রেণি / ফোন</th><th>আবেদনের অবস্থা</th><th>পেমেন্ট</th><th>Admit Roll</th><th>এডমিট কার্ড</th><th>অ্যাডমিন নোট</th><th>সংরক্ষণ</th><th>প্রিন্ট</th></tr></thead>
-<tbody id="admissionRows"><tr><td colspan="8" class="py-8 text-center text-slate-400">লোড হচ্ছে...</td></tr></tbody></table></div>
+<div class="table-wrap"><table class="table min-w-[1200px]"><thead><tr><th>আবেদন নং / শিক্ষার্থী</th><th>শ্রেণি / ফোন</th><th>আবেদনের অবস্থা</th><th>পেমেন্ট</th><th>Admit Roll</th><th>এডমিট কার্ড</th><th>অ্যাডমিন নোট</th><th>সংরক্ষণ</th><th>প্রিন্ট</th></tr></thead>
+<tbody id="admissionRows"><tr><td colspan="9" class="py-8 text-center text-slate-400">লোড হচ্ছে...</td></tr></tbody></table></div>
 <p id="pageMessage" class="text-sm" role="status"></p>
 </section>
 </main>
