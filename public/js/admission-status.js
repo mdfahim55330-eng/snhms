@@ -61,7 +61,7 @@ async function printCard(a,x){
   '<div class="admit-accent"></div>'+
   '<header class="admit-head"><div class="admit-logo-wrap"><img src="'+esc(logo)+'" alt="School logo" onerror="this.onerror=null;this.src=\'/6716-removebg-preview.png\'"></div>'+
   '<div class="admit-school"><p class="admit-kicker">'+(en?'OFFICIAL ADMISSION TEST':'ভর্তি পরীক্ষার প্রবেশপত্র')+'</p><h2>'+esc(schoolName)+'</h2>'+
-  (school.address?'<p class="admit-address">'+esc(school.address)+'</p>':'')+
+  (school.address?'<p class="admit-address">'+esc(school.address)+'</p>':'')+\n  '<p class="admit-eiin">EIIN: '+esc(school.eiin||school.eiin_number||school.institute_eiin||"140721")+'</p>'+
   '<h3>'+t("examTitle")+'</h3></div><div class="admit-year">'+esc(a.academic_year||"")+'</div></header>'+
   '<div class="admit-meta"><span>'+t("admit")+'</span><b>'+esc(a.admit_roll||a.application_no)+'</b></div>'+
   '<section class="admit-grid">'+fieldMarkup+'</section>'+
