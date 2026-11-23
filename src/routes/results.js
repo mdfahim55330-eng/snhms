@@ -479,9 +479,17 @@ router.put("/results/:id/publish", requireAdminRole, async (req, res) => {
     if (!student) throw httpError(404, "Result not found.");
 
     const classSubjects = await db.all(`SELECT * FROM subjects WHERE class_name = ?`, [student.class_name]);
+    const exam = await db.one(
+        `SELECT id FROM exams WHERE class_name = ? AND exam_name = ? AND exam_year = ? LIMIT 1`,
+        [student.class_name, student.exam_name, Number(student.exam_year)]
+    );
+    const notHeld = exam
+        ? await db.all(`SELECT subject_id FROM exam_not_held_subjects WHERE exam_id = ?`, [exam.id])
+        : [];
+    const notHeldIds = new Set(notHeld.map((row) => Number(row.subject_id)));
     const entered = await db.all(`SELECT subject_id FROM results WHERE student_id = ?`, [studentId]);
     const enteredIds = new Set(entered.map((r) => Number(r.subject_id)));
-    const missing = classSubjects.filter((s) => isMain(s) && !enteredIds.has(Number(s.id)));
+    const missing = classSubjects.filter((s) => isMain(s) && !notHeldIds.has(Number(s.id)) && !enteredIds.has(Number(s.id)));
     if (missing.length > 0) {
         throw httpError(400, `Cannot publish: marks are missing for ${missing.map((s) => s.subject_name).join(", ")}.`);
     }
