@@ -54,6 +54,16 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
         });
     }
 
+    const feeRow = await db.one("SELECT value FROM site_settings WHERE key='admission_fee'");
+    const fee = Math.max(0, Number(feeRow?.value || 0) || 0);
+    const paymentMethod = clean(body.payment_method, 30);
+    const paymentTransaction = clean(body.payment_transaction, 120);
+    if (fee > 0 && !["online", "school"].includes(paymentMethod)) {
+        return res.status(400).json({ success:false, message:"পেমেন্ট পদ্ধতি নির্বাচন করুন।" });
+    }
+    if (fee > 0 && paymentMethod === "online" && !paymentTransaction) {
+        return res.status(400).json({ success:false, message:"Transaction ID লিখুন।" });
+    }
     const application = await db.tx(async (client) => {
         const counter = await client.query(
             `INSERT INTO site_admission_counters(class_name, last_number)
@@ -104,7 +114,24 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
     });
 });
 
-router.post("/api/contact", publicLimiter, async (req, res) => {
+
+router.get("/api/admission/status", publicLimiter, async (req,res) => {
+    const applicationNo=clean(req.query.application_no,20), phone=clean(req.query.phone,40);
+    if(!applicationNo||!phone) return res.status(400).json({success:false,message:"আবেদন নম্বর ও মোবাইল নম্বর দিন।"});
+    const row=await db.one(`SELECT application_no,student_name,class_name,academic_year,phone,status,payment_status,admit_roll,admit_card_enabled
+        FROM site_admissions WHERE application_no=? AND phone=?`,[applicationNo,phone]);
+    if(!row) return res.status(404).json({success:false,message:"আবেদন পাওয়া যায়নি। তথ্য যাচাই করুন।"});
+    const settings=Object.fromEntries((await db.all("SELECT key,value FROM site_settings WHERE key LIKE 'admission_%'")).map(x=>[x.key,x.value]));
+    const fee=Number(settings.admission_fee||0)||0;
+    const canPrint=row.status==="Accepted"&&(fee===0||row.payment_status==="Verified")&&row.admit_card_enabled;
+    res.setHeader("Cache-Control","no-store");
+    res.json({success:true,application:{application_no:row.application_no,student_name:row.student_name,class_name:row.class_name,
+        academic_year:row.academic_year,status:row.status,payment_status:row.payment_status,admit_roll:row.admit_roll,
+        can_print_admit_card:canPrint},exam:{school_name:settings.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল",
+        exam_date:settings.admission_exam_date||"",exam_time:settings.admission_exam_time||"",
+        center:settings.admission_exam_center||"",instructions:settings.admission_exam_instructions||""}});
+});
+\nrouter.post("/api/contact", publicLimiter, async (req, res) => {
     const body = req.body || {};
     if (!clean(body.name, 120) || !clean(body.message, 3000)) {
         return res.status(400).json({ success: false, message: "নাম ও বার্তা লিখুন।" });
