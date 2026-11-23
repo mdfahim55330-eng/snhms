@@ -131,7 +131,8 @@ router.get("/api/admission/status", publicLimiter, async (req,res) => {
         exam_date:settings.admission_exam_date||"",exam_time:settings.admission_exam_time||"",
         center:settings.admission_exam_center||"",instructions:settings.admission_exam_instructions||""}});
 });
-\nrouter.post("/api/contact", publicLimiter, async (req, res) => {
+
+router.post("/api/contact", publicLimiter, async (req, res) => {
     const body = req.body || {};
     if (!clean(body.name, 120) || !clean(body.message, 3000)) {
         return res.status(400).json({ success: false, message: "নাম ও বার্তা লিখুন।" });
