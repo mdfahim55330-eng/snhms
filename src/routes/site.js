@@ -58,7 +58,7 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
     const fee = Math.max(0, Number(feeRow?.value || 0) || 0);
     const paymentMethod = clean(body.payment_method, 30);
     const paymentTransaction = clean(body.payment_transaction, 120);
-    if (fee > 0 && !["online", "school"].includes(paymentMethod)) {
+    if (fee > 0 && !["online", "school", "cash"].includes(paymentMethod)) {
         return res.status(400).json({ success:false, message:"পেমেন্ট পদ্ধতি নির্বাচন করুন।" });
     }
     if (fee > 0 && paymentMethod === "online" && !paymentTransaction) {
