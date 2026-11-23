@@ -25,7 +25,12 @@ function readScope(query) {
 // Available class / exam / year combinations for the report selector.
 router.get("/reports/options", async (req, res) => {
     const options = await db.all(
-        `SELECT class_name, exam_name, exam_year
+        `SELECT
+            class_name,
+            exam_name,
+            exam_year,
+            COUNT(*)::int AS students,
+            COUNT(*) FILTER (WHERE status = 'published')::int AS published
          FROM students
          GROUP BY class_name, exam_name, exam_year
          ORDER BY exam_year DESC, class_name ASC, exam_name ASC`
