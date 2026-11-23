@@ -141,7 +141,18 @@ form.addEventListener("submit",async event=>{
     }catch(error){$("#formError").textContent=error.message;$("#formError").hidden=false;$("#submitStatus").textContent="";}
     finally{button.disabled=false;}
 });
-$("#printButton").addEventListener("click",()=>window.print());
+$("#printButton").addEventListener("click",printAdmissionForm);
+
+async function printAdmissionForm(){
+    if(!submittedApplication) return;
+    makePrintSheet(submittedApplication);
+    document.body.classList.add("printing-admission");
+    try { if(document.fonts && document.fonts.ready) await document.fonts.ready; } catch(_) {}
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    window.addEventListener("afterprint",()=>document.body.classList.remove("printing-admission"),{once:true});
+    window.print();
+    setTimeout(()=>document.body.classList.remove("printing-admission"),60000);
+}
 $("#newApplication").addEventListener("click",()=>{form.reset();form.hidden=false;$("#successPanel").hidden=true;$("#submitStatus").textContent="";$("#formError").hidden=true;submittedApplication=null;window.scrollTo({top:0,behavior:"smooth"});});
 loadFormData().catch(error=>{$("#formError").textContent=error.message;$("#formError").hidden=false;});
 
