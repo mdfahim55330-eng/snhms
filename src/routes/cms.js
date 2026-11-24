@@ -123,7 +123,7 @@ router.get("/website/academic-years",async(req,res)=>{
 });
 router.post("/website/academic-years",async(req,res)=>{
  const year=clean(req.body&&req.body.year,4);
- if(!/^\\d{4}$/.test(year))return res.status(400).json({success:false,message:"Enter a valid four-digit academic year."});
+ if(!/^\d{4}$/.test(year))return res.status(400).json({success:false,message:"Enter a valid four-digit academic year."});
  const result=await db.query("INSERT INTO site_academic_years(year,active) VALUES(?,TRUE) ON CONFLICT(year) DO NOTHING RETURNING year,active",[year]);
  if(!result.rowCount)return res.status(409).json({success:false,message:"This academic year already exists."});
  await audit.log(req,"academic_year_created","site_academic_years",year,"Created academic year "+year);
@@ -131,7 +131,7 @@ router.post("/website/academic-years",async(req,res)=>{
 });
 router.put("/website/academic-years/:year",async(req,res)=>{
  const year=clean(req.params.year,4);
- if(!/^\\d{4}$/.test(year)||typeof req.body.active!=="boolean")return res.status(400).json({success:false,message:"Invalid academic year or status."});
+ if(!/^\d{4}$/.test(year)||typeof req.body.active!=="boolean")return res.status(400).json({success:false,message:"Invalid academic year or status."});
  const result=await db.query("UPDATE site_academic_years SET active=? WHERE year=? RETURNING year,active",[req.body.active,year]);
  if(!result.rowCount)return res.status(404).json({success:false,message:"Academic year not found."});
  await audit.log(req,"academic_year_updated","site_academic_years",year,"Updated academic year "+year);
