@@ -157,7 +157,7 @@ router.get("/api/admission/status", publicLimiter, async (req,res) => {
         academic_year:row.academic_year,status:row.status,payment_status:row.payment_status,admit_roll:row.admit_roll,
         can_print_admit_card:canPrint},exam:{school_name:settings.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল",
         exam_date:settings.admission_exam_date||"",exam_time:settings.admission_exam_time||"",
-        center:settings.admission_exam_center||"",instructions:settings.admission_exam_instructions||""}});
+        center:settings.admission_exam_center||"",subjects:settings.admission_exam_subjects||"",instructions:settings.admission_exam_instructions||""}});
 });
 
 router.post("/api/contact", publicLimiter, async (req, res) => {
