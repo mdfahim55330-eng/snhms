@@ -13,7 +13,7 @@ introText:"সঠিক তথ্য দিয়ে ফরমটি পূরণ �
 studentSection:"শিক্ষার্থীর তথ্য",studentBn:"শিক্ষার্থীর নাম (বাংলা) *",studentEn:"শিক্ষার্থীর নাম (ইংরেজি)",
 class:"ভর্তির শ্রেণি *",selectClass:"শ্রেণি নির্বাচন করুন",year:"শিক্ষাবর্ষ",select:"নির্বাচন করুন",group:"শাখা / বিভাগ",
 birthDate:"জন্মতারিখ *",birthReg:"জন্ম নিবন্ধন নম্বর",gender:"লিঙ্গ *",boy:"ছেলে",girl:"মেয়ে",other:"অন্যান্য",
-religion:"ধর্ম",nationality:"জাতীয়তা",parentSection:"পিতা-মাতা ও অভিভাবকের তথ্য",father:"পিতার নাম (বাংলা) *",mother:"মাতার নাম (বাংলা) *",
+religion:"ধর্ম",nationality:"জাতীয়তা",parentSection:"পিতা-মাতা ও অভিভাবকের তথ্য",father:"পিতার নাম (বাংলা) *",fatherEn:"পিতার নাম (ইংরেজি) *",mother:"মাতার নাম (বাংলা) *",motherEn:"মাতার নাম (ইংরেজি) *",
 guardian:"অভিভাবকের নাম (পিতা/মাতা ছাড়া হলে)",occupation:"অভিভাবকের পেশা",phone:"অভিভাবকের মোবাইল নম্বর *",
 altPhone:"বিকল্প মোবাইল নম্বর",email:"ইমেইল ঠিকানা",addressSection:"ঠিকানা ও পূর্ববর্তী শিক্ষাপ্রতিষ্ঠান",
 presentAddress:"বর্তমান ঠিকানা *",permanentAddress:"স্থায়ী ঠিকানা",village:"গ্রাম",postOffice:"ডাকঘর",upazila:"উপজেলা",district:"জেলা",sameAsPresent:"বর্তমান ঠিকানার মতো একই",previousSchool:"পূর্ববর্তী বিদ্যালয়ের নাম",
@@ -40,7 +40,7 @@ chooseLanguage:"Choose language",studentSection:"Student Information",studentBn:
 studentEn:"Student Name (English)",class:"Applying for Class *",selectClass:"Select class",year:"Academic Year",select:"Select",
 group:"Section / Group",birthDate:"Date of Birth *",birthReg:"Birth Registration Number",gender:"Gender *",
 boy:"Male",girl:"Female",other:"Other",religion:"Religion",nationality:"Nationality",parentSection:"Parents' & Guardian Information",
-father:"Father's Name (Bangla) *",mother:"Mother's Name (Bangla) *",guardian:"Guardian's Name (if other than parents)",occupation:"Guardian's Occupation",
+father:"Father's Name (Bangla) *",fatherEn:"Father's Name (English) *",mother:"Mother's Name (Bangla) *",motherEn:"Mother's Name (English) *",guardian:"Guardian's Name (if other than parents)",occupation:"Guardian's Occupation",
 phone:"Guardian's Mobile Number *",altPhone:"Alternative Mobile Number",email:"Email Address",
 addressSection:"Address & Previous Institution",presentAddress:"Present Address *",permanentAddress:"Permanent Address",
 previousSchool:"Previous School Name",previousClass:"Last Attended Class",previousRoll:"Last Attended Roll",village:"Village",postOffice:"Post Office",upazila:"Upazila",district:"District",sameAsPresent:"Same as present address",
@@ -143,7 +143,7 @@ function makePrintSheet(data) {
     '<div class="print-meta"><span>'+t("admissionClass")+': '+esc(data.class_name)+'</span><span>'+t("academicYear")+': '+esc(data.academic_year||new Date().getFullYear())+'</span><span class="print-number">'+t("applicationNo")+': '+esc(data.application_no)+'</span></div>'+
     '<div class="print-section">'+(en?'1. ':'১. ')+t("studentInfo")+'</div><div class="print-grid"><div class="print-fields">'+fields+'</div><div class="photo-box">'+t("studentPhoto")+'</div></div>'+
     '<div class="print-section">'+(en?'2. ':'২. ')+t("parentsInfo")+'</div><div class="print-fields">'+
-    printField(t("father"),data.father_name)+printField(t("mother"),data.mother_name)+printField(t("guardian"),data.guardian_name)+
+    printField(t("father"),data.father_name)+printField(t("fatherEn"),data.father_name_en)+printField(t("mother"),data.mother_name)+printField(t("motherEn"),data.mother_name_en)+printField(t("guardian"),data.guardian_name)+
     printField(t("guardianProfession"),data.guardian_occupation)+printField(t("mobile"),data.phone)+printField(t("alternativeMobile"),data.guardian_phone)+printField(t("emailLabel"),data.email,true)+'</div>'+
     '<div class="print-section">'+(en?'3. ':'৩. ')+t("addressInfo")+'</div><div class="print-fields">'+
     printField(t("currentAddress"),data.present_address,true)+printField(t("permanent"),data.permanent_address,true)+
