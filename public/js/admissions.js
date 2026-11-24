@@ -87,12 +87,14 @@ function printAdmitCard(a) {
         ["Exam Center",schoolSettings.admission_exam_center_en || schoolSettings.admission_exam_center]
     ];
     const fieldMarkup = fields.map((item,i)=>'<div class="admit-field '+(i===0?'admit-field-primary':'')+'"><span>'+esc(item[0])+'</span><b>'+esc(item[1]||"—")+'</b></div>').join("");
+    const examSubjects = String(schoolSettings.admission_exam_subjects || "").split(/[\\n,;،]+/).map(v=>v.trim()).filter(Boolean);
+    const subjectsMarkup = examSubjects.length ? '<div class="admit-instructions"><strong>Admission Test Subjects</strong><p>'+examSubjects.map((subject,index)=>(index+1)+'. '+esc(subject)).join(' &nbsp; | &nbsp; ')+'</p><p><b>All subjects will be examined on the same day.</b></p></div>' : '';
     const markup = '<article class="admit-card"><div class="admit-accent"></div><header class="admit-head"><div class="admit-logo-wrap"><img src="'+esc(schoolSettings.logo_url||"/6716-removebg-preview.png")+'" alt="School logo"></div>'+
         '<div class="admit-school"><p class="admit-kicker">ADMISSION EXAMINATION</p><h2>'+esc(schoolName)+'</h2>'+
         (address?'<p class="admit-address">'+esc(address)+'</p>':'')+
         '<p class="admit-eiin">EIIN: '+esc(schoolSettings.eiin||"—")+'</p><h3>ADMIT CARD</h3></div>'+
         '<div class="admit-year">'+esc(a.academic_year||"")+'</div></header><div class="admit-meta"><span>ADMIT CARD</span><b>'+esc(a.admit_roll||a.application_no)+'</b></div>'+
-        '<section class="admit-grid">'+fieldMarkup+'</section>'+
+        '<section class="admit-grid">'+fieldMarkup+'</section>'+subjectsMarkup+
         (schoolSettings.admission_exam_instructions_en || schoolSettings.admission_exam_instructions ? '<div class="admit-instructions"><strong>Exam Instructions</strong><p>'+esc(schoolSettings.admission_exam_instructions_en || schoolSettings.admission_exam_instructions)+'</p></div>':'')+
         '<footer class="admit-signatures"><div class="admit-note">Please bring this admit card to the examination hall.</div><div class="admit-signature"><span></span><b>Candidate’s Signature</b></div><div class="admit-signature"><span></span><b>Authorized Signature</b></div></footer></article>';
     printWindow("admit",markup);
@@ -118,6 +120,7 @@ $("#admissionSettings").addEventListener("submit", async e => {
     try {
         if (!Number.isFinite(Number(data.admission_fee)) || Number(data.admission_fee) < 0) throw new Error("Please enter a valid application fee.");
         const result = await call("/api/admin/website/settings",{method:"PUT",json:data});
+        schoolSettings = {...schoolSettings,...data};
         message($("#settingsMessage"),result.message || "Settings saved successfully.");
     } catch(err) { message($("#settingsMessage"),err.message,true); }
 });
