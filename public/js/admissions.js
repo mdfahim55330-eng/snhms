@@ -32,7 +32,7 @@ function printWindow(kind, markup) {
     const containerId = kind === "application" ? "printSheet" : "admitPrint";
     const bodyClass = kind === "application" ? "printing-admission" : "printing-admit";
     win.document.open();
-    win.document.write('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admission Print</title><link rel="stylesheet" href="/css/admission.css?v=full-a4-application-20261124"></head><body class="'+bodyClass+'"><div id="'+containerId+'">'+markup+'</div></body></html>');
+    win.document.write('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admission Print</title><link rel="stylesheet" href="/css/admission.css?v=compact-a4-no-overlap-20261124"></head><body class="'+bodyClass+'"><div id="'+containerId+'">'+markup+'</div></body></html>');
     win.document.close();
     let started = false;
     const run = () => {
