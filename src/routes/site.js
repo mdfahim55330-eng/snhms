@@ -81,7 +81,7 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
             error.status = 409;
             throw error;
         }
-        const applicationNo = `SNHMS-${applicationYear}-${String(counter.rows[0].last_number).padStart(3, "0")}`;
+        const applicationNo = `SNHMS${applicationYear}${String(counter.rows[0].last_number).padStart(2, "0")}`;
         const result = await client.query(
             `INSERT INTO site_admissions
              (application_no, student_name, student_name_en, father_name, mother_name, guardian_name,
