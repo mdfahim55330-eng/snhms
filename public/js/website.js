@@ -108,6 +108,15 @@ async function refresh() {
         const field = Array.from(settingsForm.elements).find((element) => element.name === setting.key);
         if (field && field.type !== "file") field.value = setting.value || "";
     }
+    const admissionPhoto = (data.site_settings || []).find((item) => item.key === "admission_section_image_url");
+    const admissionPhotoPreview = $("#admissionSectionPhotoPreview");
+    const admissionPhotoUrl = admissionPhoto && admissionPhoto.value ? admissionPhoto.value : "";
+    if (admissionPhotoPreview && !settingsForm.elements.admission_section_image_file.files.length) {
+        admissionPhotoPreview.src = admissionPhotoUrl;
+        admissionPhotoPreview.classList.toggle("hidden", !admissionPhotoUrl);
+    }
+    const admissionOpenField = settingsForm.elements.admission_open;
+    if (admissionOpenField && !admissionOpenField.value) admissionOpenField.value = "true";
     const savedPhoto = (data.site_settings || []).find((item) => item.key === "principal_photo_url");
     const photoPreview = $("#principalPhotoPreview");
     const photoUrl = savedPhoto && savedPhoto.value ? savedPhoto.value : "";
@@ -126,6 +135,22 @@ $("#settingsForm").elements.principal_photo_file.addEventListener("change", (eve
     preview.classList.remove("hidden");
 });
 
+$("#settingsForm").elements.admission_section_image_file.addEventListener("change", (event) => {
+    const preview = $("#admissionSectionPhotoPreview");
+    const file = event.currentTarget.files[0];
+    if (!preview || !file) return;
+    preview.src = URL.createObjectURL(file);
+    preview.classList.remove("hidden");
+});
+$("#removeAdmissionSectionPhoto").addEventListener("click", () => {
+    const form = $("#settingsForm");
+    form.elements.admission_section_image_url.value = "";
+    form.elements.admission_section_image_file.value = "";
+    const preview = $("#admissionSectionPhotoPreview");
+    preview.removeAttribute("src");
+    preview.classList.add("hidden");
+});
+
 $("#settingsForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -135,9 +160,11 @@ $("#settingsForm").addEventListener("submit", async (event) => {
         data.logo_url = await upload(form.elements.logo_file.files[0]) || data.logo_url || "";
         data.hero_image_url = await upload(form.elements.hero_file.files[0]) || data.hero_image_url || "";
         data.principal_photo_url = await upload(form.elements.principal_photo_file.files[0]) || data.principal_photo_url || "";
+        data.admission_section_image_url = await upload(form.elements.admission_section_image_file.files[0]) || data.admission_section_image_url || "";
         delete data.logo_file;
         delete data.hero_file;
         delete data.principal_photo_file;
+        delete data.admission_section_image_file;
         const result = await api("/api/admin/website/settings", {
             method: "PUT",
             body: JSON.stringify(data)
