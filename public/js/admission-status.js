@@ -73,7 +73,7 @@ async function printCard(a,x){
   '<h3>'+t("examTitle")+'</h3></div><div class="admit-year">'+esc(a.academic_year||"")+'</div></header>'+
   '<div class="admit-meta"><span>'+t("admit")+'</span><b>'+esc(a.admit_roll||a.application_no)+'</b></div>'+
   '<section class="admit-grid">'+fieldMarkup+'</section>'+
-  (x.subjects?'<div class="admit-instructions"><strong>'+(en?"Admission Test Subjects":"ভর্তি পরীক্ষার বিষয়সমূহ")+'</strong><p>'+String(x.subjects).split(/[\\n,;،]+/).map(v=>v.trim()).filter(Boolean).map((v,i)=>(i+1)+". "+esc(v)).join(" &nbsp; | &nbsp; ")+'</p><p><b>'+(en?"All subjects will be examined on the same day.":"সব বিষয়ের পরীক্ষা একই দিনে অনুষ্ঠিত হবে।")+'</b></p></div>':'')+
+  (x.subjects?'<div class="admit-instructions"><strong>'+(en?"Admission Test Subjects":"ভর্তি পরীক্ষার বিষয়সমূহ")+'</strong><p>'+String(x.subjects).split(/[\n,;،]+/).map(v=>v.trim()).filter(Boolean).map((v,i)=>(i+1)+". "+esc(v)).join(" &nbsp; | &nbsp; ")+'</p><p><b>'+(en?"All subjects will be examined on the same day.":"সব বিষয়ের পরীক্ষা একই দিনে অনুষ্ঠিত হবে।")+'</b></p></div>':'')+
   (x.instructions?'<div class="admit-instructions"><strong>'+t("instructions")+'</strong><p>'+esc(x.instructions)+'</p></div>':'')+
   '<footer class="admit-signatures"><div class="admit-note">'+(en?'Please bring this admit card to the examination hall.':'পরীক্ষার হলে এই প্রবেশপত্রটি সঙ্গে আনতে হবে।')+'</div><div class="admit-signature"><span></span><b>'+t("signature")+'</b></div><div class="admit-signature"><span></span><b>'+(en?'Authorized Signature':'কর্তৃপক্ষের স্বাক্ষর')+'</b></div></footer>'+
   '</article>';
