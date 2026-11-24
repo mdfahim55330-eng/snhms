@@ -150,7 +150,9 @@
                 <label class="label">Title (English)<input class="input mt-1 normal-case tracking-normal" name="title_en"></label>
                 <label class="label">Category<input class="input mt-1 normal-case tracking-normal" name="category" value="General"></label>
                 <label class="label">Category (English)<input class="input mt-1 normal-case tracking-normal" name="category_en"></label>
-                <label class="label">Attachment (PDF/JPG)<input class="input mt-1 normal-case tracking-normal" type="file" name="attachment_file" accept=".pdf,image/*"></label>
+                <label class="label">Upload Image / PDF<input class="input mt-1 normal-case tracking-normal" type="file" name="attachment_file" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif,application/pdf"></label>
+                <label class="label">Or External Link (Google Drive / Website URL)<input class="input mt-1 normal-case tracking-normal" type="url" name="attachment_url" placeholder="https://example.com/notice.pdf"></label>
+                <p class="sm:col-span-2 text-xs text-slate-500">Upload a JPG, PNG, WEBP or PDF file, or paste an HTTPS/HTTP link. If both are provided, the uploaded file will be used.</p>
             </div>
             <div class="grid gap-4 md:grid-cols-2">
                 <label class="label">Details (Bangla)<textarea class="input mt-1 min-h-24 normal-case tracking-normal" name="body"></textarea></label>
