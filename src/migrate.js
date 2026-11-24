@@ -269,7 +269,417 @@ async function migrate() {
             CREATE TABLE IF NOT EXISTS site_academic_years (
                 year TEXT PRIMARY KEY CHECK (year ~ '^[0-9]{4}
             INSERT INTO site_admission_counters(class_name, last_number)
+                SELECT class_name, MAX(CASE WHEN application_no ~ '^[0-9]+
+                GROUP BY class_name
+                ON CONFLICT(class_name) DO UPDATE
+                SET last_number = GREATEST(site_admission_counters.last_number, EXCLUDED.last_number);
+            CREATE TABLE IF NOT EXISTS site_messages (
+                id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL DEFAULT '',
+                email TEXT NOT NULL DEFAULT '', subject TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
+                read_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+            );
+            ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS value_en TEXT;
+            ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS content_en TEXT;
+            ALTER TABLE site_notices ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT, ADD COLUMN IF NOT EXISTS body_en TEXT;
+            ALTER TABLE site_staff ADD COLUMN IF NOT EXISTS name_en TEXT, ADD COLUMN IF NOT EXISTS designation_en TEXT, ADD COLUMN IF NOT EXISTS department_en TEXT;
+            ALTER TABLE site_gallery ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT;
+            ALTER TABLE site_routines ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS class_name_en TEXT;
+            ALTER TABLE site_downloads ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT;
+            ALTER TABLE site_menu_links ADD COLUMN IF NOT EXISTS label_en TEXT;
+        `);
+        await client.query(`
+            INSERT INTO site_settings(key,value) VALUES
+            ('school_name','Shaheed Nur Hossain Memorial School'),
+            ('tagline','শিক্ষার আলোয় গড়ি আগামীর ভবিষ্যৎ'),
+            ('school_name_en','Shaheed Nur Hossain Memorial School'),
+            ('tagline_en','Building a brighter future through the light of education'),
+            ('address','Biral, Dinajpur'),('phone',''),('email',''),('eiin','140721'),
+            ('logo_url','/6716-removebg-preview.png'),('hero_image_url',''),
+            ('about','শিক্ষার্থীদের জ্ঞান, নৈতিকতা, শৃঙ্খলা ও মানবিক মূল্যবোধসম্পন্ন নাগরিক হিসেবে গড়ে তোলাই আমাদের লক্ষ্য।'),
+            ('about_en','Our mission is to nurture knowledgeable, ethical, disciplined and compassionate citizens.'),
+            ('mission_en','To provide quality education and build responsible citizens with strong moral values.'),
+            ('vision_en','To become a model institution for excellence in learning, character and creativity.'),
+            ('principal_message_en','We are committed to helping every student grow into a responsible and capable citizen.'),
+            ('principal_name',''),('principal_message',''),('history',''),('mission',''),('vision',''),
+            ('facilities',''),('achievements',''),('facebook_url',''),('youtube_url','')
+            ON CONFLICT(key) DO NOTHING
+        `);
+        await client.query(`
+            INSERT INTO site_pages(slug,title,content,sort_order) VALUES
+            ('history','প্রতিষ্ঠানের ইতিহাস','প্রতিষ্ঠানের ইতিহাস ও ঐতিহ্যের বিবরণ এখানে যোগ করুন।',1),
+            ('mission','লক্ষ্য ও উদ্দেশ্য','প্রতিষ্ঠানের লক্ষ্য, উদ্দেশ্য ও শিক্ষাদর্শন।',2),
+            ('facilities','সুযোগ-সুবিধা','লাইব্রেরি, বিজ্ঞানাগার, কম্পিউটার ল্যাব ও অন্যান্য সুবিধা।',3),
+            ('governing-body','পরিচালনা পর্ষদ','পরিচালনা পর্ষদের তথ্য এখানে যোগ করুন।',4),
+            ('academic-calendar','একাডেমিক ক্যালেন্ডার','শিক্ষাবর্ষের গুরুত্বপূর্ণ তারিখ ও কার্যক্রম।',5),
+            ('holiday-list','ছুটির তালিকা','বার্ষিক ছুটির তালিকা।',6)
+            ON CONFLICT(slug) DO NOTHING
+        `);
+        await client.query(`
+            UPDATE site_pages SET title_en='Institution History',content_en='Learn about the history and heritage of our institution.' WHERE slug='history' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Mission & Objectives',content_en='Our institutional mission, objectives and educational philosophy.' WHERE slug='mission' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Facilities',content_en='Library, science laboratory, computer lab and other learning facilities.' WHERE slug='facilities' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Governing Body',content_en='Information about the governing body of the institution.' WHERE slug='governing-body' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Academic Calendar',content_en='Important dates and activities for the academic year.' WHERE slug='academic-calendar' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Holiday List',content_en='Annual holiday schedule.' WHERE slug='holiday-list' AND (title_en IS NULL OR content_en IS NULL);
+        `);
+        // ------------------------------------------------------------------
+        // 4. Indexes (speed)
+        // ------------------------------------------------------------------
+        const indexes = [
+            `CREATE INDEX IF NOT EXISTS idx_students_lookup ON students (class_name, exam_name, exam_year, roll)`,
+            `CREATE INDEX IF NOT EXISTS idx_students_status ON students (status)`,
+            `CREATE INDEX IF NOT EXISTS idx_results_student ON results (student_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_results_subject ON results (subject_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_subjects_class ON subjects (class_name)`,
+            `CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log (created_at DESC)`,
+            `CREATE INDEX IF NOT EXISTS idx_session_expire ON session (expire)`
+        ];
+        for (const sql of indexes) await client.query(sql);
+
+        // ------------------------------------------------------------------
+        // 5. Uniqueness (stops duplicate students / results)
+        // ------------------------------------------------------------------
+        await tryUniqueIndex(
+            "uq_students_roll",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_students_roll
+             ON students (class_name, exam_name, exam_year, roll)`,
+            "Some students have the same roll in the same class, exam and year."
+        );
+        await tryUniqueIndex(
+            "uq_results_student_subject",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_results_student_subject ON results (student_id, subject_id)`,
+            "Some students have the same subject saved twice."
+        );
+        await tryUniqueIndex(
+            "uq_exams",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_exams ON exams (exam_name, exam_year, class_name)`,
+            "The same exam was added more than once."
+        );
+        await tryUniqueIndex(
+            "uq_subjects_class_code",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_subjects_class_code ON subjects (class_name, subject_code)`,
+            "The same subject code was added twice for one class."
+        );
+    } finally {
+        try {
+            await client.query("SELECT pg_advisory_unlock($1)", [LOCK_KEY]);
+        } catch (e) { /* ignore */ }
+        client.release();
+    }
+
+    await bootstrapAdmin();
+}
+
+// Creates the first admin ONLY when there is no admin at all, and only from environment
+// variables. No password is ever written in the source code.
+async function bootstrapAdmin() {
+    const count = Number((await db.one(`SELECT COUNT(*) AS n FROM admins`)).n);
+    if (count > 0) return;
+
+    const { username, password } = config.bootstrapAdmin;
+    if (!username || !password) {
+        console.warn(
+            "\n[setup] There is no admin account yet.\n" +
+            "        Create one with:  npm run set-admin\n" +
+            "        (or set ADMIN_USERNAME and ADMIN_PASSWORD once, then restart)\n"
+        );
+        return;
+    }
+    if (password.length < 8) {
+        console.error("[setup] ADMIN_PASSWORD must be at least 8 characters. Admin not created.");
+        return;
+    }
+
+    const hash = await bcrypt.hash(password, 12);
+    await db.query(
+        `INSERT INTO admins (username, password, role, must_change_password)
+         VALUES (?, ?, 'admin', FALSE) ON CONFLICT (username) DO NOTHING`,
+        [username.trim(), hash]
+    );
+    console.log(`[setup] Admin account "${username.trim()}" created. You can now remove ADMIN_PASSWORD from the environment.`);
+}
+
+module.exports = { migrate };
+),
+                active BOOLEAN NOT NULL DEFAULT TRUE,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+            );
+            INSERT INTO site_academic_years(year, active)
+                VALUES ('2026', TRUE), ('2027', TRUE)
+                ON CONFLICT (year) DO NOTHING;
+            INSERT INTO site_academic_years(year, active)
+                SELECT DISTINCT academic_year, TRUE
+                FROM site_admissions
+                WHERE academic_year ~ '^[0-9]{4}
+            INSERT INTO site_admission_counters(class_name, last_number)
                 SELECT class_name, MAX(application_no::integer)
+                FROM site_admissions
+                GROUP BY class_name
+                ON CONFLICT(class_name) DO UPDATE
+                SET last_number = GREATEST(site_admission_counters.last_number, EXCLUDED.last_number);
+            CREATE TABLE IF NOT EXISTS site_messages (
+                id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL DEFAULT '',
+                email TEXT NOT NULL DEFAULT '', subject TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
+                read_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+            );
+            ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS value_en TEXT;
+            ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS content_en TEXT;
+            ALTER TABLE site_notices ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT, ADD COLUMN IF NOT EXISTS body_en TEXT;
+            ALTER TABLE site_staff ADD COLUMN IF NOT EXISTS name_en TEXT, ADD COLUMN IF NOT EXISTS designation_en TEXT, ADD COLUMN IF NOT EXISTS department_en TEXT;
+            ALTER TABLE site_gallery ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT;
+            ALTER TABLE site_routines ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS class_name_en TEXT;
+            ALTER TABLE site_downloads ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT;
+            ALTER TABLE site_menu_links ADD COLUMN IF NOT EXISTS label_en TEXT;
+        `);
+        await client.query(`
+            INSERT INTO site_settings(key,value) VALUES
+            ('school_name','Shaheed Nur Hossain Memorial School'),
+            ('tagline','শিক্ষার আলোয় গড়ি আগামীর ভবিষ্যৎ'),
+            ('school_name_en','Shaheed Nur Hossain Memorial School'),
+            ('tagline_en','Building a brighter future through the light of education'),
+            ('address','Biral, Dinajpur'),('phone',''),('email',''),('eiin','140721'),
+            ('logo_url','/6716-removebg-preview.png'),('hero_image_url',''),
+            ('about','শিক্ষার্থীদের জ্ঞান, নৈতিকতা, শৃঙ্খলা ও মানবিক মূল্যবোধসম্পন্ন নাগরিক হিসেবে গড়ে তোলাই আমাদের লক্ষ্য।'),
+            ('about_en','Our mission is to nurture knowledgeable, ethical, disciplined and compassionate citizens.'),
+            ('mission_en','To provide quality education and build responsible citizens with strong moral values.'),
+            ('vision_en','To become a model institution for excellence in learning, character and creativity.'),
+            ('principal_message_en','We are committed to helping every student grow into a responsible and capable citizen.'),
+            ('principal_name',''),('principal_message',''),('history',''),('mission',''),('vision',''),
+            ('facilities',''),('achievements',''),('facebook_url',''),('youtube_url','')
+            ON CONFLICT(key) DO NOTHING
+        `);
+        await client.query(`
+            INSERT INTO site_pages(slug,title,content,sort_order) VALUES
+            ('history','প্রতিষ্ঠানের ইতিহাস','প্রতিষ্ঠানের ইতিহাস ও ঐতিহ্যের বিবরণ এখানে যোগ করুন।',1),
+            ('mission','লক্ষ্য ও উদ্দেশ্য','প্রতিষ্ঠানের লক্ষ্য, উদ্দেশ্য ও শিক্ষাদর্শন।',2),
+            ('facilities','সুযোগ-সুবিধা','লাইব্রেরি, বিজ্ঞানাগার, কম্পিউটার ল্যাব ও অন্যান্য সুবিধা।',3),
+            ('governing-body','পরিচালনা পর্ষদ','পরিচালনা পর্ষদের তথ্য এখানে যোগ করুন।',4),
+            ('academic-calendar','একাডেমিক ক্যালেন্ডার','শিক্ষাবর্ষের গুরুত্বপূর্ণ তারিখ ও কার্যক্রম।',5),
+            ('holiday-list','ছুটির তালিকা','বার্ষিক ছুটির তালিকা।',6)
+            ON CONFLICT(slug) DO NOTHING
+        `);
+        await client.query(`
+            UPDATE site_pages SET title_en='Institution History',content_en='Learn about the history and heritage of our institution.' WHERE slug='history' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Mission & Objectives',content_en='Our institutional mission, objectives and educational philosophy.' WHERE slug='mission' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Facilities',content_en='Library, science laboratory, computer lab and other learning facilities.' WHERE slug='facilities' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Governing Body',content_en='Information about the governing body of the institution.' WHERE slug='governing-body' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Academic Calendar',content_en='Important dates and activities for the academic year.' WHERE slug='academic-calendar' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Holiday List',content_en='Annual holiday schedule.' WHERE slug='holiday-list' AND (title_en IS NULL OR content_en IS NULL);
+        `);
+        // ------------------------------------------------------------------
+        // 4. Indexes (speed)
+        // ------------------------------------------------------------------
+        const indexes = [
+            `CREATE INDEX IF NOT EXISTS idx_students_lookup ON students (class_name, exam_name, exam_year, roll)`,
+            `CREATE INDEX IF NOT EXISTS idx_students_status ON students (status)`,
+            `CREATE INDEX IF NOT EXISTS idx_results_student ON results (student_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_results_subject ON results (subject_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_subjects_class ON subjects (class_name)`,
+            `CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log (created_at DESC)`,
+            `CREATE INDEX IF NOT EXISTS idx_session_expire ON session (expire)`
+        ];
+        for (const sql of indexes) await client.query(sql);
+
+        // ------------------------------------------------------------------
+        // 5. Uniqueness (stops duplicate students / results)
+        // ------------------------------------------------------------------
+        await tryUniqueIndex(
+            "uq_students_roll",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_students_roll
+             ON students (class_name, exam_name, exam_year, roll)`,
+            "Some students have the same roll in the same class, exam and year."
+        );
+        await tryUniqueIndex(
+            "uq_results_student_subject",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_results_student_subject ON results (student_id, subject_id)`,
+            "Some students have the same subject saved twice."
+        );
+        await tryUniqueIndex(
+            "uq_exams",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_exams ON exams (exam_name, exam_year, class_name)`,
+            "The same exam was added more than once."
+        );
+        await tryUniqueIndex(
+            "uq_subjects_class_code",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_subjects_class_code ON subjects (class_name, subject_code)`,
+            "The same subject code was added twice for one class."
+        );
+    } finally {
+        try {
+            await client.query("SELECT pg_advisory_unlock($1)", [LOCK_KEY]);
+        } catch (e) { /* ignore */ }
+        client.release();
+    }
+
+    await bootstrapAdmin();
+}
+
+// Creates the first admin ONLY when there is no admin at all, and only from environment
+// variables. No password is ever written in the source code.
+async function bootstrapAdmin() {
+    const count = Number((await db.one(`SELECT COUNT(*) AS n FROM admins`)).n);
+    if (count > 0) return;
+
+    const { username, password } = config.bootstrapAdmin;
+    if (!username || !password) {
+        console.warn(
+            "\n[setup] There is no admin account yet.\n" +
+            "        Create one with:  npm run set-admin\n" +
+            "        (or set ADMIN_USERNAME and ADMIN_PASSWORD once, then restart)\n"
+        );
+        return;
+    }
+    if (password.length < 8) {
+        console.error("[setup] ADMIN_PASSWORD must be at least 8 characters. Admin not created.");
+        return;
+    }
+
+    const hash = await bcrypt.hash(password, 12);
+    await db.query(
+        `INSERT INTO admins (username, password, role, must_change_password)
+         VALUES (?, ?, 'admin', FALSE) ON CONFLICT (username) DO NOTHING`,
+        [username.trim(), hash]
+    );
+    console.log(`[setup] Admin account "${username.trim()}" created. You can now remove ADMIN_PASSWORD from the environment.`);
+}
+
+module.exports = { migrate };
+
+                ON CONFLICT (year) DO NOTHING;
+            INSERT INTO site_admission_counters(class_name, last_number)
+                SELECT class_name, MAX(application_no::integer)
+                FROM site_admissions
+                GROUP BY class_name
+                ON CONFLICT(class_name) DO UPDATE
+                SET last_number = GREATEST(site_admission_counters.last_number, EXCLUDED.last_number);
+            CREATE TABLE IF NOT EXISTS site_messages (
+                id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL DEFAULT '',
+                email TEXT NOT NULL DEFAULT '', subject TEXT NOT NULL DEFAULT '', message TEXT NOT NULL,
+                read_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+            );
+            ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS value_en TEXT;
+            ALTER TABLE site_pages ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS content_en TEXT;
+            ALTER TABLE site_notices ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT, ADD COLUMN IF NOT EXISTS body_en TEXT;
+            ALTER TABLE site_staff ADD COLUMN IF NOT EXISTS name_en TEXT, ADD COLUMN IF NOT EXISTS designation_en TEXT, ADD COLUMN IF NOT EXISTS department_en TEXT;
+            ALTER TABLE site_gallery ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT;
+            ALTER TABLE site_routines ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS class_name_en TEXT;
+            ALTER TABLE site_downloads ADD COLUMN IF NOT EXISTS title_en TEXT, ADD COLUMN IF NOT EXISTS category_en TEXT;
+            ALTER TABLE site_menu_links ADD COLUMN IF NOT EXISTS label_en TEXT;
+        `);
+        await client.query(`
+            INSERT INTO site_settings(key,value) VALUES
+            ('school_name','Shaheed Nur Hossain Memorial School'),
+            ('tagline','শিক্ষার আলোয় গড়ি আগামীর ভবিষ্যৎ'),
+            ('school_name_en','Shaheed Nur Hossain Memorial School'),
+            ('tagline_en','Building a brighter future through the light of education'),
+            ('address','Biral, Dinajpur'),('phone',''),('email',''),('eiin','140721'),
+            ('logo_url','/6716-removebg-preview.png'),('hero_image_url',''),
+            ('about','শিক্ষার্থীদের জ্ঞান, নৈতিকতা, শৃঙ্খলা ও মানবিক মূল্যবোধসম্পন্ন নাগরিক হিসেবে গড়ে তোলাই আমাদের লক্ষ্য।'),
+            ('about_en','Our mission is to nurture knowledgeable, ethical, disciplined and compassionate citizens.'),
+            ('mission_en','To provide quality education and build responsible citizens with strong moral values.'),
+            ('vision_en','To become a model institution for excellence in learning, character and creativity.'),
+            ('principal_message_en','We are committed to helping every student grow into a responsible and capable citizen.'),
+            ('principal_name',''),('principal_message',''),('history',''),('mission',''),('vision',''),
+            ('facilities',''),('achievements',''),('facebook_url',''),('youtube_url','')
+            ON CONFLICT(key) DO NOTHING
+        `);
+        await client.query(`
+            INSERT INTO site_pages(slug,title,content,sort_order) VALUES
+            ('history','প্রতিষ্ঠানের ইতিহাস','প্রতিষ্ঠানের ইতিহাস ও ঐতিহ্যের বিবরণ এখানে যোগ করুন।',1),
+            ('mission','লক্ষ্য ও উদ্দেশ্য','প্রতিষ্ঠানের লক্ষ্য, উদ্দেশ্য ও শিক্ষাদর্শন।',2),
+            ('facilities','সুযোগ-সুবিধা','লাইব্রেরি, বিজ্ঞানাগার, কম্পিউটার ল্যাব ও অন্যান্য সুবিধা।',3),
+            ('governing-body','পরিচালনা পর্ষদ','পরিচালনা পর্ষদের তথ্য এখানে যোগ করুন।',4),
+            ('academic-calendar','একাডেমিক ক্যালেন্ডার','শিক্ষাবর্ষের গুরুত্বপূর্ণ তারিখ ও কার্যক্রম।',5),
+            ('holiday-list','ছুটির তালিকা','বার্ষিক ছুটির তালিকা।',6)
+            ON CONFLICT(slug) DO NOTHING
+        `);
+        await client.query(`
+            UPDATE site_pages SET title_en='Institution History',content_en='Learn about the history and heritage of our institution.' WHERE slug='history' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Mission & Objectives',content_en='Our institutional mission, objectives and educational philosophy.' WHERE slug='mission' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Facilities',content_en='Library, science laboratory, computer lab and other learning facilities.' WHERE slug='facilities' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Governing Body',content_en='Information about the governing body of the institution.' WHERE slug='governing-body' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Academic Calendar',content_en='Important dates and activities for the academic year.' WHERE slug='academic-calendar' AND (title_en IS NULL OR content_en IS NULL);
+            UPDATE site_pages SET title_en='Holiday List',content_en='Annual holiday schedule.' WHERE slug='holiday-list' AND (title_en IS NULL OR content_en IS NULL);
+        `);
+        // ------------------------------------------------------------------
+        // 4. Indexes (speed)
+        // ------------------------------------------------------------------
+        const indexes = [
+            `CREATE INDEX IF NOT EXISTS idx_students_lookup ON students (class_name, exam_name, exam_year, roll)`,
+            `CREATE INDEX IF NOT EXISTS idx_students_status ON students (status)`,
+            `CREATE INDEX IF NOT EXISTS idx_results_student ON results (student_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_results_subject ON results (subject_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_subjects_class ON subjects (class_name)`,
+            `CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log (created_at DESC)`,
+            `CREATE INDEX IF NOT EXISTS idx_session_expire ON session (expire)`
+        ];
+        for (const sql of indexes) await client.query(sql);
+
+        // ------------------------------------------------------------------
+        // 5. Uniqueness (stops duplicate students / results)
+        // ------------------------------------------------------------------
+        await tryUniqueIndex(
+            "uq_students_roll",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_students_roll
+             ON students (class_name, exam_name, exam_year, roll)`,
+            "Some students have the same roll in the same class, exam and year."
+        );
+        await tryUniqueIndex(
+            "uq_results_student_subject",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_results_student_subject ON results (student_id, subject_id)`,
+            "Some students have the same subject saved twice."
+        );
+        await tryUniqueIndex(
+            "uq_exams",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_exams ON exams (exam_name, exam_year, class_name)`,
+            "The same exam was added more than once."
+        );
+        await tryUniqueIndex(
+            "uq_subjects_class_code",
+            `CREATE UNIQUE INDEX IF NOT EXISTS uq_subjects_class_code ON subjects (class_name, subject_code)`,
+            "The same subject code was added twice for one class."
+        );
+    } finally {
+        try {
+            await client.query("SELECT pg_advisory_unlock($1)", [LOCK_KEY]);
+        } catch (e) { /* ignore */ }
+        client.release();
+    }
+
+    await bootstrapAdmin();
+}
+
+// Creates the first admin ONLY when there is no admin at all, and only from environment
+// variables. No password is ever written in the source code.
+async function bootstrapAdmin() {
+    const count = Number((await db.one(`SELECT COUNT(*) AS n FROM admins`)).n);
+    if (count > 0) return;
+
+    const { username, password } = config.bootstrapAdmin;
+    if (!username || !password) {
+        console.warn(
+            "\n[setup] There is no admin account yet.\n" +
+            "        Create one with:  npm run set-admin\n" +
+            "        (or set ADMIN_USERNAME and ADMIN_PASSWORD once, then restart)\n"
+        );
+        return;
+    }
+    if (password.length < 8) {
+        console.error("[setup] ADMIN_PASSWORD must be at least 8 characters. Admin not created.");
+        return;
+    }
+
+    const hash = await bcrypt.hash(password, 12);
+    await db.query(
+        `INSERT INTO admins (username, password, role, must_change_password)
+         VALUES (?, ?, 'admin', FALSE) ON CONFLICT (username) DO NOTHING`,
+        [username.trim(), hash]
+    );
+    console.log(`[setup] Admin account "${username.trim()}" created. You can now remove ADMIN_PASSWORD from the environment.`);
+}
+
+module.exports = { migrate };
+ THEN application_no::integer ELSE 0 END)
                 FROM site_admissions
                 GROUP BY class_name
                 ON CONFLICT(class_name) DO UPDATE
