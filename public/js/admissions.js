@@ -177,7 +177,7 @@ $("#academicYearForm").addEventListener("submit",async e=>{
     const form=e.currentTarget,year=String(new FormData(form).get("year")||"").trim();
     const status=$("#academicYearMessage");
     try{
-        if(!/^\\d{4}$/.test(year))throw new Error("Enter a valid four-digit year.");
+        if(!/^\d{4}$/.test(year))throw new Error("Enter a valid four-digit year.");
         await call("/api/admin/website/academic-years",{method:"POST",json:{year}});
         form.reset();message(status,"Academic year added successfully.");await refreshAcademicYears();
     }catch(err){message(status,err.message,true);}
