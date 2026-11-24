@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Online admission application">
 <title>ভর্তি আবেদন | শহীদ নূর হোসেন মেমোরিয়াল স্কুল</title>
-<link rel="icon" href="/6716-removebg-preview.png"><link rel="stylesheet" href="/css/admission.css?v=original-admission-print-before-full-a4-20261124">
+<link rel="icon" href="/6716-removebg-preview.png"><link rel="stylesheet" href="/css/admission.css?v=address-details-print-20261124">
 </head>
 <body>
 <header class="page-top"><a href="/" data-i18n="home">← হোমপেজে ফিরে যান</a><span data-i18n="topTitle">অনলাইন ভর্তি আবেদন</span><a href="/pages/result-search.html" data-i18n="results">ফলাফল</a></header>
@@ -43,15 +43,30 @@
 <label class="full"><span data-i18n="email">ইমেইল ঠিকানা</span><input name="email" type="email" maxlength="160" placeholder="example@email.com"></label>
 </div></section>
 <section class="form-section"><h2><span>৩</span> <b data-i18n="addressSection">ঠিকানা ও পূর্ববর্তী শিক্ষাপ্রতিষ্ঠান</b></h2><div class="fields">
-<label class="full"><span data-i18n="presentAddress">বর্তমান ঠিকানা *</span><textarea name="present_address" required rows="2" maxlength="1000"></textarea></label>
-<label class="full"><span data-i18n="permanentAddress">স্থায়ী ঠিকানা</span><textarea name="permanent_address" rows="2" maxlength="1000"></textarea></label>
+<div class="full address-group">
+<strong data-i18n="presentAddress">বর্তমান ঠিকানা *</strong>
+<div class="fields address-fields">
+<label><span data-i18n="village">গ্রাম</span><input name="present_village" required maxlength="120"></label>
+<label><span data-i18n="postOffice">ডাকঘর</span><input name="present_post_office" required maxlength="120"></label>
+<label><span data-i18n="upazila">উপজেলা</span><input name="present_upazila" required maxlength="120"></label>
+<label><span data-i18n="district">জেলা</span><input name="present_district" required maxlength="120"></label>
+</div></div>
+<div class="full address-group">
+<div class="address-heading"><strong data-i18n="permanentAddress">স্থায়ী ঠিকানা</strong><label class="same-address"><input type="checkbox" id="sameAsPresent"> <span data-i18n="sameAsPresent">বর্তমান ঠিকানার মতো একই</span></label></div>
+<div class="fields address-fields">
+<label><span data-i18n="village">গ্রাম</span><input name="permanent_village" maxlength="120"></label>
+<label><span data-i18n="postOffice">ডাকঘর</span><input name="permanent_post_office" maxlength="120"></label>
+<label><span data-i18n="upazila">উপজেলা</span><input name="permanent_upazila" maxlength="120"></label>
+<label><span data-i18n="district">জেলা</span><input name="permanent_district" maxlength="120"></label>
+</div></div>
 <label><span data-i18n="previousSchool">পূর্ববর্তী বিদ্যালয়ের নাম</span><input name="previous_school" maxlength="180"></label>
 <label><span data-i18n="previousClass">সর্বশেষ অধ্যয়নকৃত শ্রেণি</span><input name="previous_class" maxlength="60"></label>
+<label><span data-i18n="previousRoll">সর্বশেষ শ্রেণির রোল</span><input name="previous_roll" maxlength="40"></label>
 </div></section>
 <label class="declaration"><input type="checkbox" name="declaration" required><span data-i18n="declaration">আমি ঘোষণা করছি যে, উপরে দেওয়া সকল তথ্য আমার জানা মতে সঠিক। ভুল তথ্য প্রদান করলে কর্তৃপক্ষ আবেদন বাতিল করতে পারবেন।</span></label>
 <div class="form-actions"><button class="submit-btn" type="submit" id="submitButton" data-i18n="submit">আবেদন জমা দিন</button><button class="reset-btn" type="reset" data-i18n="reset">ফরম মুছুন</button><span id="submitStatus" role="status"></span></div>
 </form>
 <section id="successPanel" class="success-panel" hidden><div class="success-icon">✓</div><div><h2 data-i18n="successTitle">আবেদন সফলভাবে জমা হয়েছে</h2><p data-i18n="successText">আপনার আবেদন নম্বর সংরক্ষণ করুন এবং A4 ফরমটি প্রিন্ট করুন।</p><strong id="applicationNumber"></strong></div><div class="success-actions"><button id="printButton" class="submit-btn" type="button" data-i18n="print">আবেদন ফরম প্রিন্ট করুন</button><button id="newApplication" class="reset-btn" type="button" data-i18n="newApp">নতুন আবেদন</button></div></section>
 </main><div id="printSheet" aria-hidden="true"></div><footer>© <span id="footerYear"></span> <span data-i18n="schoolName">শহীদ নূর হোসেন মেমোরিয়াল স্কুল</span></footer>
-<script src="/js/admission.js?v=academic-years-20261124"></script>
+<script src="/js/admission.js?v=address-details-print-20261124"></script>
 </body></html>
