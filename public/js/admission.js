@@ -103,7 +103,7 @@ async function loadFormData() {
     (data.classes||[]).forEach(name=>{const option=document.createElement("option");option.value=name;option.textContent=name;classSelect.append(option);});
     const year=$("#academicYear");year.innerHTML="";
     const placeholder=new Option(t("select"),"");year.add(placeholder);
-    const activeYears=(data.academicYears||[]).map(item=>String(item.year)).filter(value=>/^\\d{4}$/.test(value));
+    const activeYears=(data.academicYears||[]).map(item=>String(item.year)).filter(value=>/^\d{4}$/.test(value));
     const current=String(new Date().getFullYear());
     activeYears.forEach(value=>{const option=new Option(value,value);year.add(option);});
     if(activeYears.includes(current))year.value=current;
