@@ -41,7 +41,7 @@ function renderItems(key, items) {
     list.innerHTML = items.map((item) => {
         const title = item.title || item.name || item.slug || item.label;
         const detail = item.designation || item.category || item.class_name || item.body ||
-            item.content || item.file_url || item.url || "";
+            item.content || item.file_url || item.url || (key === "notices" ? item.attachment_url : "") || "";
         const menuEdit = key === "menu"
             ? '<button class="btn-secondary btn-sm" data-edit="menu" data-id="' + esc(item.id) +
               '" data-label="' + esc(item.label) + '" data-url="' + esc(item.url) + '">Edit</button>'
