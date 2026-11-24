@@ -628,3 +628,53 @@
   margin:0!important;
  }
 }
+
+
+/* Final balanced layout: equal gaps between every form section; no auto-pushed signature block. */
+@page{size:A4 portrait;margin:6mm}
+@media print{
+ body.printing-admission #printSheet .print-page{
+  display:flex!important;flex-direction:column!important;
+  justify-content:space-evenly!important;align-items:stretch!important;
+  width:100%!important;height:285mm!important;min-height:285mm!important;
+  box-sizing:border-box!important;overflow:visible!important;
+  padding:4mm 5mm!important;
+ }
+ body.printing-admission #printSheet .print-page>*{
+  flex:0 0 auto!important;min-width:0!important;
+  margin:0!important;
+ }
+ body.printing-admission #printSheet .print-head{padding:0 0 1.5mm!important}
+ body.printing-admission #printSheet .print-title{margin:0 auto!important}
+ body.printing-admission #printSheet .print-meta{margin:0!important}
+ body.printing-admission #printSheet .print-section{margin:0!important}
+ body.printing-admission #printSheet .print-grid,
+ body.printing-admission #printSheet .print-fields{margin:0!important}
+ body.printing-admission #printSheet .print-field{
+  min-width:0!important;height:auto!important;
+  white-space:normal!important;overflow:visible!important;
+  overflow-wrap:anywhere!important;word-break:normal!important;
+  line-height:1.2!important;
+ }
+ body.printing-admission #printSheet .print-field b{
+  white-space:normal!important;overflow-wrap:anywhere!important;
+ }
+ body.printing-admission #printSheet .print-declaration{
+  margin:0!important;white-space:normal!important;
+  overflow-wrap:anywhere!important;line-height:1.25!important;
+ }
+ body.printing-admission #printSheet .print-signatures{
+  margin:0!important;padding:0!important;gap:5mm!important;
+ }
+ body.printing-admission #printSheet .print-signatures div{
+  min-width:0!important;height:auto!important;min-height:7mm!important;
+  margin:0!important;padding:1.5mm .5mm 0!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;
+  line-height:1.2!important;
+ }
+ body.printing-admission #printSheet .print-foot{
+  position:static!important;left:auto!important;right:auto!important;bottom:auto!important;
+  margin:0!important;padding:1mm 0 0!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;
+ }
+}
