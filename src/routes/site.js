@@ -36,8 +36,7 @@ router.get("/api/site", publicLimiter, async (req, res) => {
     res.json(data);
 });
 
-// Public application form. The sequence is allocated atomically per class so simultaneous
-// applications cannot receive the same six-digit number.
+// Public application form. A single atomic counter generates readable, year-based application numbers.
 router.post("/api/admission", publicLimiter, async (req, res) => {
     const body = req.body || {};
     const studentName = clean(body.student_name, 160);
@@ -65,21 +64,24 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
         return res.status(400).json({ success:false, message:"Transaction ID লিখুন।" });
     }
     const application = await db.tx(async (client) => {
+        const applicationYear = clean(body.academic_year, 12) || String(new Date().getFullYear());
         const counter = await client.query(
             `INSERT INTO site_admission_counters(class_name, last_number)
-             VALUES ($1, 1)
+             VALUES ('__GLOBAL__', (SELECT COALESCE(MAX(id), 0) + 1 FROM site_admissions))
              ON CONFLICT (class_name)
-             DO UPDATE SET last_number = site_admission_counters.last_number + 1
+             DO UPDATE SET last_number = GREATEST(
+                 site_admission_counters.last_number,
+                 (SELECT COALESCE(MAX(id), 0) FROM site_admissions)
+             ) + 1
              WHERE site_admission_counters.last_number < 999999
-             RETURNING last_number`,
-            [className]
+             RETURNING last_number`
         );
         if (!counter.rowCount) {
-            const error = new Error("এই শ্রেণির জন্য ছয় সংখ্যার আবেদন নম্বর শেষ হয়ে গেছে।");
+            const error = new Error("এই শিক্ষাবর্ষের আবেদন নম্বর শেষ হয়ে গেছে।");
             error.status = 409;
             throw error;
         }
-        const applicationNo = String(counter.rows[0].last_number).padStart(6, "0");
+        const applicationNo = `SNHMS-${applicationYear}-${String(counter.rows[0].last_number).padStart(3, "0")}`;
         const result = await client.query(
             `INSERT INTO site_admissions
              (application_no, student_name, student_name_en, father_name, mother_name, guardian_name,
@@ -98,7 +100,7 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
                 fatherName, motherName, guardianName, body.birth_date || null,
                 clean(body.birth_reg_no, 40), clean(body.gender, 30), clean(body.religion, 40),
                 clean(body.nationality || "বাংলাদেশী", 60), className, clean(body.group_name, 60),
-                clean(body.academic_year, 12), phone, clean(body.guardian_phone || phone, 40),
+                applicationYear, phone, clean(body.guardian_phone || phone, 40),
                 clean(body.guardian_occupation, 100), clean(body.email, 160), clean(body.present_address || body.address, 1000),
                 clean(body.present_address || body.address, 1000), clean(body.permanent_address, 1000),
                 clean(body.previous_school, 180), clean(body.previous_class, 60)
