@@ -15,7 +15,6 @@ const pages=d.pages||[];$("#pageGrid").innerHTML=pages.map(x=>'<article class="p
 if(s.facebook_url||s.youtube_url)$("#socialLinks").innerHTML=[s.facebook_url?'<a href="'+esc(safeUrl(s.facebook_url))+'" target="_blank" rel="noopener">Facebook</a>':"",s.youtube_url?'<a href="'+esc(safeUrl(s.youtube_url))+'" target="_blank" rel="noopener">YouTube</a>':""].join(" · ");
 }catch(e){console.error(e);$("#noticeGrid").textContent="ওয়েবসাইটের তথ্য লোড করা যায়নি। ডেটাবেস সেটআপ পরীক্ষা করুন।"}}
 
-$("#contactForm").addEventListener("submit",async e=>{e.preventDefault();const btn=e.target.querySelector("button");btn.disabled=true;try{const d=await api("/api/contact",{method:"POST",body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});$("#contactMessage").textContent=d.message;e.target.reset()}catch(x){$("#contactMessage").textContent=x.message}finally{btn.disabled=false}});
 const menuToggle=$("#menuToggle"),mainNav=$("#mainNav");
 if(menuToggle&&mainNav){menuToggle.setAttribute("aria-expanded","false");menuToggle.addEventListener("click",()=>{const open=mainNav.classList.toggle("open");menuToggle.setAttribute("aria-expanded",String(open));});mainNav.addEventListener("click",e=>{if(e.target.closest("a")){mainNav.classList.remove("open");menuToggle.setAttribute("aria-expanded","false");}});}
 document.addEventListener("click",e=>{if(menuToggle&&mainNav&&!e.target.closest(".header-inner")){mainNav.classList.remove("open");menuToggle.setAttribute("aria-expanded","false");}});
