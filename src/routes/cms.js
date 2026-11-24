@@ -24,7 +24,7 @@ const clean=(v,n=12000)=>String(v??"").trim().slice(0,n);
 const validAttachmentUrl=(value)=>{
  const url=clean(value,2000);
  if(!url)return true;
- if(/[\\\\\\u0000-\\u001f]/.test(url)||url.startsWith("//"))return false;
+ if(/[\u0000-\u001f\\]/.test(url)||url.startsWith("//"))return false;
  if(url.startsWith("/"))return true;
  try{const parsed=new URL(url);return parsed.protocol==="http:"||parsed.protocol==="https:";}catch{return false;}
 };
