@@ -21,6 +21,13 @@ const upload=multer({storage,limits:{fileSize:config.upload.maxBytes},fileFilter
  cb(allowed?null:new Error("শুধু JPG, PNG, WEBP, GIF অথবা PDF ফাইল আপলোড করা যাবে।"),allowed);
 }});
 const clean=(v,n=12000)=>String(v??"").trim().slice(0,n);
+const validAttachmentUrl=(value)=>{
+ const url=clean(value,2000);
+ if(!url)return true;
+ if(/[\\\\\\u0000-\\u001f]/.test(url)||url.startsWith("//"))return false;
+ if(url.startsWith("/"))return true;
+ try{const parsed=new URL(url);return parsed.protocol==="http:"||parsed.protocol==="https:";}catch{return false;}
+};
 router.use(requireAdminRole);
 router.get("/website/data",async(req,res)=>{
  const tables=["site_settings","site_pages","site_notices","site_staff","site_gallery","site_routines","site_downloads","site_menu_links","site_messages"];
@@ -52,6 +59,7 @@ for(const [key,c] of Object.entries(configs)){
  router.post("/website/"+key,async(req,res)=>{
   const b=req.body||{};
   for(const k of c.required)if(!clean(b[k],500))return res.status(400).json({success:false,message:k+" আবশ্যক"});
+  if(key==="notices"&&!validAttachmentUrl(b.attachment_url))return res.status(400).json({success:false,message:"নোটিশের লিংকটি বৈধ URL হতে হবে (http/https অথবা সাইটের / দিয়ে শুরু হওয়া পাথ)।"});
   const fields=c.fields.filter(k=>b[k]!==undefined),values=fields.map(k=>b[k]);
   const sql="INSERT INTO "+c.table+"("+fields.join(",")+") VALUES("+fields.map(()=>"?").join(",")+") RETURNING *";
   const result=await db.query(sql,values);
@@ -61,6 +69,7 @@ for(const [key,c] of Object.entries(configs)){
  router.put("/website/"+key+"/:id",async(req,res)=>{
   const fields=c.fields.filter(k=>req.body&&req.body[k]!==undefined);
   if(!fields.length)return res.status(400).json({success:false,message:"পরিবর্তনের তথ্য দিন"});
+  if(key==="notices"&&req.body.attachment_url!==undefined&&!validAttachmentUrl(req.body.attachment_url))return res.status(400).json({success:false,message:"নোটিশের লিংকটি বৈধ URL হতে হবে (http/https অথবা সাইটের / দিয়ে শুরু হওয়া পাথ)।"});
   const values=fields.map(k=>req.body[k]);values.push(req.params.id);
   const sql="UPDATE "+c.table+" SET "+fields.map(k=>k+"=?").join(",")+" WHERE id=? RETURNING *";
   const result=await db.query(sql,values);
