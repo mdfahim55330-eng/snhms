@@ -161,8 +161,43 @@ $("#disableAll").addEventListener("click",()=>bulkAdmit(false));
 $("#refreshAdmissions").addEventListener("click",()=>refresh().catch(e=>message($("#pageMessage"),e.message,true)));
 $("#admissionSearch").addEventListener("input",renderRows);
 $("#statusFilter").addEventListener("change",renderRows);
+
+let academicYears = [];
+async function refreshAcademicYears() {
+    const data = await call("/api/admin/website/academic-years");
+    academicYears = data.items || [];
+    $("#academicYearRows").innerHTML = academicYears.map(item =>
+        '<tr><td class="font-semibold">'+esc(item.year)+'</td><td>'+(item.active?'<span class="badge-green">Active</span>':'<span class="badge-amber">Inactive</span>')+
+        '</td><td>'+(item.active?'Visible':'Hidden')+'</td><td class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-year-toggle="'+esc(item.year)+'" data-active="'+String(!item.active)+'">'+(item.active?'Deactivate':'Activate')+'</button>'+
+        '<button type="button" class="btn-secondary btn-sm" data-year-delete="'+esc(item.year)+'">Delete</button></td></tr>'
+    ).join("") || '<tr><td colspan="4" class="py-6 text-center text-slate-400">No academic years added.</td></tr>';
+}
+$("#academicYearForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const form=e.currentTarget,year=String(new FormData(form).get("year")||"").trim();
+    const status=$("#academicYearMessage");
+    try{
+        if(!/^\\d{4}$/.test(year))throw new Error("Enter a valid four-digit year.");
+        await call("/api/admin/website/academic-years",{method:"POST",json:{year}});
+        form.reset();message(status,"Academic year added successfully.");await refreshAcademicYears();
+    }catch(err){message(status,err.message,true);}
+});
+$("#academicYearRows").addEventListener("click",async e=>{
+    const toggle=e.target.closest("[data-year-toggle]");
+    const del=e.target.closest("[data-year-delete]");
+    try{
+        if(toggle){
+            await call("/api/admin/website/academic-years/"+encodeURIComponent(toggle.dataset.year),{method:"PUT",json:{active:toggle.dataset.active==="true"}});
+            message($("#academicYearMessage"),"Academic year status updated.");await refreshAcademicYears();
+        }else if(del){
+            if(!confirm("Delete academic year "+del.dataset.year+"?"))return;
+            await call("/api/admin/website/academic-years/"+encodeURIComponent(del.dataset.year),{method:"DELETE"});
+            message($("#academicYearMessage"),"Academic year deleted.");await refreshAcademicYears();
+        }
+    }catch(err){message($("#academicYearMessage"),err.message,true);}
+});
 App.shell("admissions").then(async user => {
     if (!user) return;
-    try { await Promise.all([loadSettings(),refresh()]); }
+    try { await Promise.all([loadSettings(),refresh(),refreshAcademicYears()]); }
     catch(err) { message($("#pageMessage"),err.message,true); }
 });
