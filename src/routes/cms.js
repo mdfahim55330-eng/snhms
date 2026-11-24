@@ -116,4 +116,34 @@ router.put("/website/messages/:id/read",async(req,res)=>{
  await db.query("UPDATE site_messages SET read_at=now() WHERE id=?",[req.params.id]);
  res.json({success:true});
 });
+
+router.get("/website/academic-years",async(req,res)=>{
+ const items=await db.all("SELECT year,active,created_at FROM site_academic_years ORDER BY year DESC");
+ res.json({success:true,items});
+});
+router.post("/website/academic-years",async(req,res)=>{
+ const year=clean(req.body&&req.body.year,4);
+ if(!/^\\d{4}$/.test(year))return res.status(400).json({success:false,message:"Enter a valid four-digit academic year."});
+ const result=await db.query("INSERT INTO site_academic_years(year,active) VALUES(?,TRUE) ON CONFLICT(year) DO NOTHING RETURNING year,active",[year]);
+ if(!result.rowCount)return res.status(409).json({success:false,message:"This academic year already exists."});
+ await audit.log(req,"academic_year_created","site_academic_years",year,"Created academic year "+year);
+ res.status(201).json({success:true,item:result.rows[0]});
+});
+router.put("/website/academic-years/:year",async(req,res)=>{
+ const year=clean(req.params.year,4);
+ if(!/^\\d{4}$/.test(year)||typeof req.body.active!=="boolean")return res.status(400).json({success:false,message:"Invalid academic year or status."});
+ const result=await db.query("UPDATE site_academic_years SET active=? WHERE year=? RETURNING year,active",[req.body.active,year]);
+ if(!result.rowCount)return res.status(404).json({success:false,message:"Academic year not found."});
+ await audit.log(req,"academic_year_updated","site_academic_years",year,"Updated academic year "+year);
+ res.json({success:true,item:result.rows[0]});
+});
+router.delete("/website/academic-years/:year",async(req,res)=>{
+ const year=clean(req.params.year,4);
+ const used=await db.one("SELECT COUNT(*) AS total FROM site_admissions WHERE academic_year=?",[year]);
+ if(Number(used&&used.total)>0)return res.status(409).json({success:false,message:"This year has applications. Deactivate it instead to preserve records."});
+ const result=await db.query("DELETE FROM site_academic_years WHERE year=? RETURNING year",[year]);
+ if(!result.rowCount)return res.status(404).json({success:false,message:"Academic year not found."});
+ await audit.log(req,"academic_year_deleted","site_academic_years",year,"Deleted academic year "+year);
+ res.json({success:true});
+});
 module.exports=router;
