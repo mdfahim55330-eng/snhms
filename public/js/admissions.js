@@ -126,11 +126,13 @@ $("#admissionRows").addEventListener("click", async e => {
     if (deleteButton) {
         const application = applications.find(item => String(item.id) === deleteButton.dataset.deleteApplication);
         if (!application) return;
-        const confirmed = confirm(
-            "Permanently delete this admission application?\\n\\n" +
-            "Application No.: " + (application.application_no || "—") + "\\n" +
-            "Student: " + (application.student_name || "—") + "\\n\\n" +
-            "This action cannot be undone. The application and its review/admit-card details will be removed."
+        const confirmed = await App.confirm(
+            "Delete admission application",
+            "Are you sure you want to permanently delete this application? Application No.: " +
+            (application.application_no || "—") + " | Student: " +
+            (application.student_name || "—") +
+            ". This action cannot be undone. The application and its review/admit-card details will be removed.",
+            { danger: true, confirmText: "Delete" }
         );
         if (!confirmed) return;
         deleteButton.disabled = true;
@@ -173,7 +175,13 @@ $("#admissionRows").addEventListener("click", async e => {
 async function bulkAdmit(enabled) {
     const targets = applications.filter(a => a.status === "Accepted");
     if (!targets.length) { message($("#pageMessage"),"There are no accepted applications yet.",true); return; }
-    if (!confirm(targets.length+" accepted students’ admit cards "+(enabled?"Enabled":"Disabled")+" ?")) return;
+    const ok = await App.confirm(
+        enabled ? "Enable all admit cards" : "Disable all admit cards",
+        "Are you sure you want to " + (enabled ? "enable" : "disable") +
+        " admit cards for " + targets.length + " accepted students?",
+        { danger: !enabled, confirmText: enabled ? "Enable All" : "Disable All" }
+    );
+    if (!ok) return;
     try {
         for (const a of targets) await call("/api/admin/website/admissions/"+a.id,{method:"PUT",json:{admit_card_enabled:enabled}});
         message($("#pageMessage"),"Accepted students’ admit cards "+(enabled?"Enabled":"Disabled")+" successfully updated.");
@@ -213,7 +221,15 @@ $("#academicYearRows").addEventListener("click",async e=>{
     const button=toggle||del;
     const year=toggle?toggle.dataset.yearToggle:del.dataset.yearDelete;
     try{
-        if(del&&!confirm("Permanently delete academic year "+year+"? This is only allowed when no applications are linked to it."))return;
+        if(del){
+            const ok = await App.confirm(
+                "Delete academic year",
+                "Are you sure you want to permanently delete academic year " + year +
+                "? This is only allowed when no applications are linked to it.",
+                { danger: true, confirmText: "Delete" }
+            );
+            if(!ok)return;
+        }
         button.disabled=true;
         button.textContent=del?"Deleting...":(toggle.dataset.active==="true"?"Activating...":"Deactivating...");
         if(toggle){
