@@ -73,7 +73,7 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
     }
     const application = await db.tx(async (client) => {
         const applicationYear = clean(body.academic_year, 4);
-        if (!/^\\d{4}$/.test(applicationYear)) {
+        if (!/^\d{4}$/.test(applicationYear)) {
             const error = new Error("একটি বৈধ শিক্ষাবর্ষ নির্বাচন করুন।");
             error.status = 400;
             throw error;
