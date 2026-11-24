@@ -114,20 +114,20 @@ router.post("/api/admission", publicLimiter, async (req, res) => {
         const applicationNo = `SNHMS${applicationYear}${String(counter.rows[0].last_number).padStart(2, "0")}`;
         const result = await client.query(
             `INSERT INTO site_admissions
-             (application_no, student_name, student_name_en, father_name, mother_name, guardian_name,
+             (application_no, student_name, student_name_en, father_name, father_name_en, mother_name, mother_name_en, guardian_name,
               birth_date, birth_reg_no, gender, religion, nationality, class_name, group_name,
               academic_year, phone, guardian_phone, guardian_occupation, email, address, present_address,
               permanent_address, previous_school, previous_class)
              VALUES
-             ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
-             RETURNING id, application_no, student_name, student_name_en, father_name, mother_name,
+             ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25)
+             RETURNING id, application_no, student_name, student_name_en, father_name, father_name_en, mother_name, mother_name_en,
                        guardian_name, guardian_occupation, birth_date, birth_reg_no, gender, religion, nationality,
                        class_name, group_name, academic_year, phone, guardian_phone, email,
                        address, present_address, permanent_address, previous_school, previous_class,
                        status, created_at`,
             [
                 applicationNo, studentName, clean(body.student_name_en, 160),
-                fatherName, motherName, guardianName, body.birth_date || null,
+                fatherName, clean(body.father_name_en, 160), motherName, clean(body.mother_name_en, 160), guardianName, body.birth_date || null,
                 clean(body.birth_reg_no, 40), clean(body.gender, 30), clean(body.religion, 40),
                 clean(body.nationality || "বাংলাদেশী", 60), className, clean(body.group_name, 60),
                 applicationYear, phone, clean(body.guardian_phone || phone, 40),
