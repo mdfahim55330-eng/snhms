@@ -101,8 +101,15 @@ async function loadFormData() {
     }
     const classSelect=$("#className");
     (data.classes||[]).forEach(name=>{const option=document.createElement("option");option.value=name;option.textContent=name;classSelect.append(option);});
-    const year=$("#academicYear");const current=new Date().getFullYear();
-    for(let y=current;y<=current+1;y++){const option=document.createElement("option");option.value=String(y);option.textContent=String(y);if(y===current)option.selected=true;year.append(option);}
+    const year=$("#academicYear");year.innerHTML="";
+    const placeholder=new Option(t("select"),"");year.add(placeholder);
+    const activeYears=(data.academicYears||[]).map(item=>String(item.year)).filter(value=>/^\\d{4}$/.test(value));
+    const current=String(new Date().getFullYear());
+    activeYears.forEach(value=>{const option=new Option(value,value);year.add(option);});
+    if(activeYears.includes(current))year.value=current;
+    else if(activeYears.length)year.value=activeYears[0];
+    year.required=true;
+    if(!activeYears.length){year.disabled=true;$("#formError").textContent=language==="en"?"No active admission academic year is available.":"বর্তমানে কোনো সক্রিয় শিক্ষাবর্ষে আবেদন গ্রহণ করা হচ্ছে না।";$("#formError").hidden=false;}
     $("#footerYear").textContent=current;setLanguage(language);
 }
 function printField(label,val,wide=false){return '<div class="print-field'+(wide?' wide':'')+'"><b>'+esc(label)+':</b> '+esc(val||"—")+'</div>';}
