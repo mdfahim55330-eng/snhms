@@ -23,7 +23,7 @@ function renderRows() {
     ["Pending","Reviewed","Accepted","Rejected","Waiting List"].map(s=>'<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+({"Pending":"Pending","Reviewed":"Reviewed","Accepted":"Accepted","Rejected":"Rejected","Waiting List":"Waiting List"}[s])+'</option>').join("")+
     '</select></td><td><select class="input min-w-32" data-field="payment_status">'+
     ["Not Required","Pending","Verified","Rejected"].map(s=>'<option value="'+s+'" '+((a.payment_status||"Not Required")===s?'selected':'')+'>'+({"Not Required":"Not Required","Pending":"Pending","Verified":"Verified","Rejected":"Rejected"}[s])+'</option>').join("")+
-    '</select></td><td><input class="input min-w-24" data-field="admit_roll" value="'+esc(a.admit_roll||"")+'" placeholder="Roll No."></td><td><label class="flex items-center gap-2 text-sm"><input type="checkbox" data-field="admit_card_enabled" '+(a.admit_card_enabled?'checked':'')+'> Enabled</label></td><td><input class="input min-w-36" data-field="admin_note" value="'+esc(a.admin_note||"")+'" placeholder="Note"></td><td><button class="btn-primary btn-sm" data-save="'+esc(a.id)+'">Save</button></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-print-application="'+esc(a.id)+'">Application Form</button><button type="button" class="btn-secondary btn-sm" data-print-admit="'+esc(a.id)+'">Admit Card</button></div></td></tr>').join("") || '<tr><td colspan="9" class="py-10 text-center text-slate-400">No applications found.</td></tr>';
+    '</select></td><td><input class="input min-w-24" data-field="admit_roll" value="'+esc(a.admit_roll||"")+'" placeholder="Roll No."></td><td><label class="flex items-center gap-2 text-sm"><input type="checkbox" data-field="admit_card_enabled" '+(a.admit_card_enabled?'checked':'')+'> Enabled</label></td><td><input class="input min-w-36" data-field="admin_note" value="'+esc(a.admin_note||"")+'" placeholder="Note"></td><td><button class="btn-primary btn-sm" data-save="'+esc(a.id)+'">Save</button></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-print-application="'+esc(a.id)+'">Application Form</button><button type="button" class="btn-secondary btn-sm" data-print-admit="'+esc(a.id)+'">Admit Card</button></div></td></tr>').join("") || '<tr><td colspan="10" class="py-10 text-center text-slate-400">No applications found.</td></tr>';
 }
 
 function printWindow(kind, markup) {
@@ -122,6 +122,30 @@ $("#admissionSettings").addEventListener("submit", async e => {
     } catch(err) { message($("#settingsMessage"),err.message,true); }
 });
 $("#admissionRows").addEventListener("click", async e => {
+    const deleteButton = e.target.closest("[data-delete-application]");
+    if (deleteButton) {
+        const application = applications.find(item => String(item.id) === deleteButton.dataset.deleteApplication);
+        if (!application) return;
+        const confirmed = confirm(
+            "Permanently delete this admission application?\\n\\n" +
+            "Application No.: " + (application.application_no || "—") + "\\n" +
+            "Student: " + (application.student_name || "—") + "\\n\\n" +
+            "This action cannot be undone. The application and its review/admit-card details will be removed."
+        );
+        if (!confirmed) return;
+        deleteButton.disabled = true;
+        deleteButton.textContent = "Deleting...";
+        try {
+            const result = await call("/api/admin/website/admissions/" + encodeURIComponent(application.id), {method:"DELETE"});
+            message($("#pageMessage"), result.message || "Admission application deleted successfully.");
+            await refresh();
+        } catch(err) {
+            message($("#pageMessage"), err.message, true);
+            deleteButton.disabled = false;
+            deleteButton.textContent = "Delete";
+        }
+        return;
+    }
     const applicationPrint = e.target.closest("[data-print-application]");
     if (applicationPrint) {
         const a = applications.find(item => String(item.id) === applicationPrint.dataset.printApplication);
