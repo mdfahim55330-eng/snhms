@@ -108,7 +108,23 @@ async function refresh() {
         const field = Array.from(settingsForm.elements).find((element) => element.name === setting.key);
         if (field && field.type !== "file") field.value = setting.value || "";
     }
+    const savedPhoto = (data.site_settings || []).find((item) => item.key === "principal_photo_url");
+    const photoPreview = $("#principalPhotoPreview");
+    const photoUrl = savedPhoto && savedPhoto.value ? savedPhoto.value : "";
+    if (photoPreview && !settingsForm.elements.principal_photo_file.files.length) {
+        photoPreview.src = photoUrl;
+        photoPreview.classList.toggle("hidden", !photoUrl);
+    }
 }
+
+$("#settingsForm").elements.principal_photo_file.addEventListener("change", (event) => {
+    const preview = $("#principalPhotoPreview");
+    const file = event.currentTarget.files[0];
+    if (!preview) return;
+    if (!file) return;
+    preview.src = URL.createObjectURL(file);
+    preview.classList.remove("hidden");
+});
 
 $("#settingsForm").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -121,6 +137,7 @@ $("#settingsForm").addEventListener("submit", async (event) => {
         data.principal_photo_url = await upload(form.elements.principal_photo_file.files[0]) || data.principal_photo_url || "";
         delete data.logo_file;
         delete data.hero_file;
+        delete data.principal_photo_file;
         const result = await api("/api/admin/website/settings", {
             method: "PUT",
             body: JSON.stringify(data)
