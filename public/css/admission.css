@@ -462,3 +462,116 @@
  }
  body.printing-admission #printSheet .print-foot{left:8mm!important;right:8mm!important;bottom:3mm!important}
 }
+
+
+/* Unified one-page A4 application print layout for public and admin print paths. */
+@page{size:A4 portrait;margin:6mm}
+@media print{
+ html,body{
+  width:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+  background:#fff!important;color:#111!important;
+ }
+ body.printing-admission #printSheet{
+  display:block!important;visibility:visible!important;position:static!important;
+  width:100%!important;margin:0!important;padding:0!important;
+  font-family:Arial,Helvetica,sans-serif!important;color:#111!important;
+ }
+ body.printing-admission #printSheet .print-page{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  position:relative!important;box-sizing:border-box!important;
+  width:100%!important;height:285mm!important;min-height:285mm!important;
+  margin:0!important;padding:4mm 5mm 3mm!important;overflow:hidden!important;
+  border:1px solid #34566a!important;border-radius:1.5mm!important;
+  box-shadow:none!important; font-family:Arial,Helvetica,sans-serif!important;
+  font-size:7pt!important;line-height:1.16!important;
+  break-inside:avoid!important;page-break-inside:avoid!important;
+  page-break-after:avoid!important;
+ }
+ body.printing-admission #printSheet .print-head{
+  display:grid!important;grid-template-columns:18mm minmax(0,1fr) 10mm!important;
+  gap:2mm!important;align-items:center!important;
+  padding:0 0 1.5mm!important;margin:0!important;
+  border-bottom:1.2px solid #244b63!important;
+ }
+ body.printing-admission #printSheet .print-logo{
+  display:block!important;width:16mm!important;height:16mm!important;
+  max-width:16mm!important;object-fit:contain!important;
+ }
+ body.printing-admission #printSheet .print-head h1{
+  margin:0 0 .5mm!important;font-size:12pt!important;line-height:1.12!important;
+ }
+ body.printing-admission #printSheet .print-head p{
+  margin:.25mm 0!important;font-size:6.2pt!important;line-height:1.12!important;
+ }
+ body.printing-admission #printSheet .print-head .en{font-size:7pt!important}
+ body.printing-admission #printSheet .print-title{
+  margin:1.5mm auto 1mm!important;padding:.8mm 7mm!important;
+  font-size:9pt!important;line-height:1.15!important;
+ }
+ body.printing-admission #printSheet .print-meta{
+  display:flex!important;justify-content:space-between!important;gap:2mm!important;
+  margin:0 0 1mm!important;font-size:6.5pt!important;line-height:1.15!important;
+ }
+ body.printing-admission #printSheet .print-meta span{
+  padding:1mm 1.4mm!important;min-width:0!important;
+ }
+ body.printing-admission #printSheet .print-number{
+  padding:1mm 1.5mm!important;letter-spacing:.2px!important;
+ }
+ body.printing-admission #printSheet .print-section{
+  margin:1.2mm 0 .7mm!important;padding:1mm 1.8mm!important;
+  font-size:7pt!important;line-height:1.15!important;
+ }
+ body.printing-admission #printSheet .print-grid{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 23mm!important;
+  gap:2mm!important;align-items:start!important;
+ }
+ body.printing-admission #printSheet .print-fields{
+  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:.8mm 2mm!important;align-items:stretch!important;
+ }
+ body.printing-admission #printSheet .print-field{
+  display:block!important;box-sizing:border-box!important;min-width:0!important;
+  min-height:6.3mm!important;height:auto!important;
+  padding:.65mm 1.1mm!important;margin:0!important;
+  font-size:6.5pt!important;line-height:1.15!important;
+  overflow-wrap:anywhere!important;word-break:normal!important;
+ }
+ body.printing-admission #printSheet .print-field b{
+  display:inline!important;margin:0!important;font-size:5.8pt!important;
+  line-height:1.12!important;font-weight:700!important;
+ }
+ body.printing-admission #printSheet .print-field.wide{grid-column:1/-1!important}
+ body.printing-admission #printSheet .photo-box{
+  display:grid!important;box-sizing:border-box!important;
+  width:23mm!important;height:27mm!important;min-height:27mm!important;
+  padding:1mm!important;font-size:6pt!important;line-height:1.15!important;
+ }
+ body.printing-admission #printSheet .print-declaration{
+  display:block!important;flex:0 0 auto!important;box-sizing:border-box!important;
+  margin:1.5mm 0 0!important;padding:1.3mm 1.8mm!important;
+  font-size:6.2pt!important;line-height:1.22!important;
+  overflow-wrap:anywhere!important;
+ }
+ body.printing-admission #printSheet .print-signatures{
+  display:grid!important;position:static!important;left:auto!important;right:auto!important;bottom:auto!important;
+  flex:0 0 auto!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:5mm!important;box-sizing:border-box!important;
+  margin:auto 0 0!important;padding:7mm 0 0!important;
+  font-size:6.2pt!important;line-height:1.15!important;text-align:center!important;
+ }
+ body.printing-admission #printSheet .print-signatures div{
+  display:block!important;position:relative!important;box-sizing:border-box!important;
+  height:auto!important;min-height:7mm!important;margin:0!important;
+  padding:1.5mm .5mm 0!important;border-top:1px solid #333!important;
+  font-size:6.2pt!important;line-height:1.15!important;
+ }
+ body.printing-admission #printSheet .print-signatures div::before{display:none!important}
+ body.printing-admission #printSheet .print-foot{
+  display:block!important;position:static!important;left:auto!important;right:auto!important;bottom:auto!important;
+  flex:0 0 auto!important;box-sizing:border-box!important;
+  margin:2mm 0 0!important;padding:1mm 0 0!important;
+  border-top:1px solid #c5cdd2!important;text-align:center!important;
+  font-size:5.8pt!important;line-height:1.1!important;
+ }
+}
