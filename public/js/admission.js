@@ -86,6 +86,12 @@ async function loadFormData() {
     const response=await fetch("/api/site");
     if(!response.ok) throw new Error(t("errorLoad"));
     const data=await response.json(); school=data.settings||school; admissionSettings=school;
+    if(school.admission_open==="false"){
+      const formArea=$("#admissionForm"); if(formArea)formArea.hidden=true;
+      document.querySelectorAll(".form-status-card,.language-row").forEach(el=>el.hidden=true);
+      const error=$("#formError"); error.textContent=language==="en"?"Online admission is currently closed. Please check again when applications reopen.":"বর্তমানে অনলাইন ভর্তি আবেদন গ্রহণ বন্ধ রয়েছে। ভর্তি কার্যক্রম চালু হলে আবার আবেদন করতে পারবেন।"; error.hidden=false;
+      $("#admissionFeeInfo").hidden=true; return;
+    }
     const fee=Math.max(0,Number(school.admission_fee||0)||0);
     $("#admissionFeeInfo").hidden=false;
     $("#admissionFeeInfo").textContent=fee===0?"আবেদন ফি: সম্পূর্ণ ফ্রি":"আবেদন ফি: "+fee+" টাকা";
