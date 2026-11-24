@@ -47,11 +47,12 @@ function pf(label, value, wide = false) {
     return '<div class="print-field'+(wide?' wide':'')+'"><b>'+esc(label)+':</b> '+esc(value||"—")+'</div>';
 }
 function printApplication(a) {
-    const en = localStorage.getItem("snhms-language") === "en";
-    const name = en ? (schoolSettings.school_name_en || "Shaheed Nur Hossain Memorial School") : (schoolSettings.school_name || "শহীদ নূর হোসেন মেমোরিয়াল স্কুল");
+    // Admin Application Form print is always generated in English.
+    const en = true;
+    const name = schoolSettings.school_name_en || "Shaheed Nur Hossain Memorial School";
     const nameEn = schoolSettings.school_name_en || "Shaheed Nur Hossain Memorial School";
-    const address = schoolSettings.address || "বিরল, দিনাজপুর";
-    const L = (bn, english) => en ? english : bn;
+    const address = schoolSettings.address_en || schoolSettings.address || "Biral, Dinajpur";
+    const L = (bn, english) => english;
     const fields = [
         pf(L("শিক্ষার্থীর নাম (বাংলা)","Student Name (Bangla)"),a.student_name,true),
         pf(L("শিক্ষার্থীর নাম (ইংরেজি)","Student Name (English)"),a.student_name_en,true),
