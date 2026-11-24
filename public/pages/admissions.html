@@ -23,6 +23,7 @@
 <label class="label">Application Fee (BDT; enter 0 for free)<input class="input mt-1" type="number" min="0" step="0.01" name="admission_fee" value="0" required></label>
 <label class="label">Admission Exam Date<input class="input mt-1" type="date" name="admission_exam_date"></label>
 <label class="label">Exam Time<input class="input mt-1" name="admission_exam_time" placeholder="10:00 AM"></label>
+<label class="label sm:col-span-2 lg:col-span-3">Admission Test Subjects (one subject per line)<textarea class="input mt-1 min-h-28" name="admission_exam_subjects" placeholder="বাংলা&#10;English&#10;গণিত&#10;সাধারণ জ্ঞান"></textarea><span class="mt-1 block text-xs font-normal text-slate-500">All subjects will be examined on the same day. These subjects will appear on every admit card.</span></label>
 <label class="label">Exam Center<input class="input mt-1" name="admission_exam_center"></label>
 <label class="label">bKash Number (Optional)<input class="input mt-1" name="admission_bkash"></label>
 <label class="label">Nagad Number (Optional)<input class="input mt-1" name="admission_nagad"></label>
@@ -58,5 +59,5 @@
 <p id="pageMessage" class="text-sm" role="status"></p>
 </section>
 </main>
-<script src="/js/app.js?v=admissions-admin-1"></script><script src="/js/admissions.js?v=admission-management-confirm-dialog-20261124"></script>
+<script src="/js/app.js?v=admissions-admin-1"></script><script src="/js/admissions.js?v=admission-test-subjects-20261124"></script>
 </body></html>
