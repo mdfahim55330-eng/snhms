@@ -33,7 +33,7 @@ async function loadSchool(){
 function renderResult(a,x){
  const status=statusLabel(a.status);
  result.innerHTML='<div class="status-result-head"><span class="status-result-icon">✓</span><div><h2>'+t("details")+'</h2><p>'+t("application")+': <b>'+esc(a.application_no)+'</b></p></div></div>'+
- '<div class="status-detail-grid"><div><small>'+t("student")+'</small><b>'+esc(a.student_name)+'</b></div><div><small>'+t("class")+'</small><b>'+esc(a.class_name)+'</b></div><div><small>'+t("status")+'</small><b class="status-value">'+esc(status)+'</b></div><div><small>'+t("payment")+'</small><b>'+esc(paymentLabel(a.payment_status))+'</b></div></div>'+
+ '<div class="status-detail-grid"><div><small>'+t("student")+'</small><b>'+esc(language==="en"?(a.student_name_en||a.student_name):a.student_name)+'</b></div><div><small>'+t("class")+'</small><b>'+esc(a.class_name)+'</b></div><div><small>'+t("status")+'</small><b class="status-value">'+esc(status)+'</b></div><div><small>'+t("payment")+'</small><b>'+esc(paymentLabel(a.payment_status))+'</b></div></div>'+
  (a.can_print_admit_card?'<button id="printAdmit" class="admit-print-btn" type="button"><span class="admit-btn-symbol">▤</span><span>'+t("print")+'</span><span class="admit-btn-arrow">→</span></button>':'<p class="admit-not-ready">'+t("notReady")+'</p>');
  result.hidden=false;
  const btn=$("#printAdmit");if(btn)btn.addEventListener("click",()=>printCard(a,x));
@@ -54,7 +54,7 @@ async function printCard(a,x){
  const schoolName=en?(school.school_name_en||"Shaheed Nur Hossain Memorial School"):(school.school_name||"শহীদ নূর হোসেন মেমোরিয়াল স্কুল");
  const logo=school.logo_url||"/6716-removebg-preview.png";
  const fields=[
-  [t("student"),a.student_name],
+  [t("student"),en?(a.student_name_en||a.student_name):a.student_name],
   [t("application"),a.application_no],
   [t("class"),a.class_name],
   [t("examRoll"),a.admit_roll||a.application_no],
