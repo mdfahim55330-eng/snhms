@@ -13,11 +13,11 @@ introText:"সঠিক তথ্য দিয়ে ফরমটি পূরণ �
 studentSection:"শিক্ষার্থীর তথ্য",studentBn:"শিক্ষার্থীর নাম (বাংলা) *",studentEn:"শিক্ষার্থীর নাম (ইংরেজি)",
 class:"ভর্তির শ্রেণি *",selectClass:"শ্রেণি নির্বাচন করুন",year:"শিক্ষাবর্ষ",select:"নির্বাচন করুন",group:"শাখা / বিভাগ",
 birthDate:"জন্মতারিখ *",birthReg:"জন্ম নিবন্ধন নম্বর",gender:"লিঙ্গ *",boy:"ছেলে",girl:"মেয়ে",other:"অন্যান্য",
-religion:"ধর্ম",nationality:"জাতীয়তা",parentSection:"পিতা-মাতা ও অভিভাবকের তথ্য",father:"পিতার নাম *",mother:"মাতার নাম *",
+religion:"ধর্ম",nationality:"জাতীয়তা",parentSection:"পিতা-মাতা ও অভিভাবকের তথ্য",father:"পিতার নাম (বাংলা) *",mother:"মাতার নাম (বাংলা) *",
 guardian:"অভিভাবকের নাম (পিতা/মাতা ছাড়া হলে)",occupation:"অভিভাবকের পেশা",phone:"অভিভাবকের মোবাইল নম্বর *",
 altPhone:"বিকল্প মোবাইল নম্বর",email:"ইমেইল ঠিকানা",addressSection:"ঠিকানা ও পূর্ববর্তী শিক্ষাপ্রতিষ্ঠান",
-presentAddress:"বর্তমান ঠিকানা *",permanentAddress:"স্থায়ী ঠিকানা",previousSchool:"পূর্ববর্তী বিদ্যালয়ের নাম",
-previousClass:"সর্বশেষ অধ্যয়নকৃত শ্রেণি",declaration:"আমি ঘোষণা করছি যে, উপরে দেওয়া সকল তথ্য আমার জানা মতে সঠিক। ভুল তথ্য প্রদান করলে কর্তৃপক্ষ আবেদন বাতিল করতে পারবেন।",
+presentAddress:"বর্তমান ঠিকানা *",permanentAddress:"স্থায়ী ঠিকানা",village:"গ্রাম",postOffice:"ডাকঘর",upazila:"উপজেলা",district:"জেলা",sameAsPresent:"বর্তমান ঠিকানার মতো একই",previousSchool:"পূর্ববর্তী বিদ্যালয়ের নাম",
+previousClass:"সর্বশেষ অধ্যয়নকৃত শ্রেণি",previousRoll:"সর্বশেষ শ্রেণির রোল",declaration:"আমি ঘোষণা করছি যে, উপরে দেওয়া সকল তথ্য আমার জানা মতে সঠিক। ভুল তথ্য প্রদান করলে কর্তৃপক্ষ আবেদন বাতিল করতে পারবেন।",
 submit:"আবেদন জমা দিন",reset:"ফরম মুছুন",successTitle:"আবেদন সফলভাবে জমা হয়েছে",
 successText:"আপনার আবেদন নম্বর সংরক্ষণ করুন এবং A4 ফরমটি প্রিন্ট করুন।",print:"আবেদন ফরম প্রিন্ট করুন",
 newApp:"নতুন আবেদন",schoolName:"শহীদ নূর হোসেন মেমোরিয়াল স্কুল",studentBnPh:"বাংলায় পূর্ণ নাম",
@@ -40,10 +40,10 @@ chooseLanguage:"Choose language",studentSection:"Student Information",studentBn:
 studentEn:"Student Name (English)",class:"Applying for Class *",selectClass:"Select class",year:"Academic Year",select:"Select",
 group:"Section / Group",birthDate:"Date of Birth *",birthReg:"Birth Registration Number",gender:"Gender *",
 boy:"Male",girl:"Female",other:"Other",religion:"Religion",nationality:"Nationality",parentSection:"Parents' & Guardian Information",
-father:"Father's Name *",mother:"Mother's Name *",guardian:"Guardian's Name (if other than parents)",occupation:"Guardian's Occupation",
+father:"Father's Name (Bangla) *",mother:"Mother's Name (Bangla) *",guardian:"Guardian's Name (if other than parents)",occupation:"Guardian's Occupation",
 phone:"Guardian's Mobile Number *",altPhone:"Alternative Mobile Number",email:"Email Address",
 addressSection:"Address & Previous Institution",presentAddress:"Present Address *",permanentAddress:"Permanent Address",
-previousSchool:"Previous School Name",previousClass:"Last Attended Class",
+previousSchool:"Previous School Name",previousClass:"Last Attended Class",previousRoll:"Last Attended Roll",village:"Village",postOffice:"Post Office",upazila:"Upazila",district:"District",sameAsPresent:"Same as present address",
 declaration:"I declare that all information provided above is true to the best of my knowledge. The authority may reject this application if any information is found to be incorrect.",
 submit:"Submit Application",reset:"Clear Form",successTitle:"Application Submitted Successfully",
 successText:"Please save your application number and print the A4 application form.",print:"Print Application Form",newApp:"New Application",
@@ -81,6 +81,16 @@ function setLanguage(next) {
     if(submittedApplication) makePrintSheet(submittedApplication);
 }
 document.querySelectorAll(".language-btn").forEach(btn=>btn.addEventListener("click",()=>setLanguage(btn.dataset.lang)));
+const addressParts = ["village","post_office","upazila","district"];
+const sameAddress = $("#sameAsPresent");
+function copyPresentAddress() {
+    addressParts.forEach(part => { form.elements["permanent_"+part].value = form.elements["present_"+part].value; });
+}
+sameAddress.addEventListener("change", () => { if (sameAddress.checked) copyPresentAddress(); });
+addressParts.forEach(part => form.elements["present_"+part].addEventListener("input", () => {
+    if (sameAddress.checked) copyPresentAddress();
+}));
+
 
 async function loadFormData() {
     const response=await fetch("/api/site");
@@ -137,13 +147,23 @@ function makePrintSheet(data) {
     printField(t("guardianProfession"),data.guardian_occupation)+printField(t("mobile"),data.phone)+printField(t("alternativeMobile"),data.guardian_phone)+printField(t("emailLabel"),data.email,true)+'</div>'+
     '<div class="print-section">'+(en?'3. ':'৩. ')+t("addressInfo")+'</div><div class="print-fields">'+
     printField(t("currentAddress"),data.present_address,true)+printField(t("permanent"),data.permanent_address,true)+
-    printField(t("oldSchool"),data.previous_school)+printField(t("lastClass"),data.previous_class)+'</div>'+
+    printField(t("oldSchool"),data.previous_school)+printField(t("lastClass"),(data.previous_class||"").split(" | ")[0])+printField(t("previousRoll"),(data.previous_class||"").includes(" | ")?(data.previous_class||"").split(" | ").slice(1).join(" | ").replace(/^(Roll: |রোল: )/,""):"")+'</div>'+
     '<div class="print-declaration">'+t("printDeclaration")+'</div><div class="print-signatures"><div>'+t("studentSignature")+'</div><div>'+t("guardianSignature")+'</div><div>'+t("officeSignature")+'</div></div>'+
     '<div class="print-foot">'+t("applicationNo")+': '+esc(data.application_no)+' · '+t("generated")+': '+esc(new Date().toLocaleDateString(en?"en-GB":"bn-BD"))+'</div></article>';
 }
 form.addEventListener("submit",async event=>{
     event.preventDefault();$("#formError").hidden=true;const button=$("#submitButton");button.disabled=true;$("#submitStatus").textContent=t("submitting");
-    const payload=Object.fromEntries(new FormData(form));delete payload.declaration;if(Number(admissionSettings.admission_fee||0)<=0){delete payload.payment_method;delete payload.payment_transaction;}
+    const payload=Object.fromEntries(new FormData(form));delete payload.declaration;
+    const addressText = prefix => addressParts.map(part => {
+      const key = part==="post_office" ? "postOffice" : part;
+      const value = payload[prefix+"_"+part] || "";
+      return value ? t(key)+": "+value : "";
+    }).filter(Boolean).join(", ");
+    payload.present_address = addressText("present");
+    payload.permanent_address = addressText("permanent");
+    payload.previous_class = [payload.previous_class, payload.previous_roll ? (language==="en"?"Roll: ":"রোল: ")+payload.previous_roll : ""].filter(Boolean).join(" | ");
+    delete payload.previous_roll;
+    if(Number(admissionSettings.admission_fee||0)<=0){delete payload.payment_method;delete payload.payment_transaction;}
     payload.guardian_name=payload.guardian_name||payload.father_name||payload.mother_name;
     try{
       const response=await fetch("/api/admission",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
