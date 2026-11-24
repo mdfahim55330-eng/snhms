@@ -113,7 +113,7 @@ router.put("/website/admissions/:id",async(req,res)=>{
 });
 router.delete("/website/admissions/:id",async(req,res)=>{
  const id=String(req.params.id||"");
- if(!/^\\d+$/.test(id)||Number(id)<1)return res.status(400).json({success:false,message:"Invalid application ID."});
+ if(!/^\d+$/.test(id)||Number(id)<1)return res.status(400).json({success:false,message:"Invalid application ID."});
  const application=await db.one("SELECT id,application_no,student_name,academic_year FROM site_admissions WHERE id=?",[id]);
  if(!application)return res.status(404).json({success:false,message:"Admission application not found."});
  await db.query("DELETE FROM site_admissions WHERE id=?",[id]);
