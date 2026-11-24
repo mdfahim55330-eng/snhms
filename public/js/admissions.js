@@ -23,7 +23,7 @@ function renderRows() {
     ["Pending","Reviewed","Accepted","Rejected","Waiting List"].map(s=>'<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+({"Pending":"Pending","Reviewed":"Reviewed","Accepted":"Accepted","Rejected":"Rejected","Waiting List":"Waiting List"}[s])+'</option>').join("")+
     '</select></td><td><select class="input min-w-32" data-field="payment_status">'+
     ["Not Required","Pending","Verified","Rejected"].map(s=>'<option value="'+s+'" '+((a.payment_status||"Not Required")===s?'selected':'')+'>'+({"Not Required":"Not Required","Pending":"Pending","Verified":"Verified","Rejected":"Rejected"}[s])+'</option>').join("")+
-    '</select></td><td><input class="input min-w-24" data-field="admit_roll" value="'+esc(a.admit_roll||"")+'" placeholder="Roll No."></td><td><label class="flex items-center gap-2 text-sm"><input type="checkbox" data-field="admit_card_enabled" '+(a.admit_card_enabled?'checked':'')+'> Enabled</label></td><td><input class="input min-w-36" data-field="admin_note" value="'+esc(a.admin_note||"")+'" placeholder="Note"></td><td><button class="btn-primary btn-sm" data-save="'+esc(a.id)+'">Save</button></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-print-application="'+esc(a.id)+'">Application Form</button><button type="button" class="btn-secondary btn-sm" data-print-admit="'+esc(a.id)+'">Admit Card</button></div></td></tr>').join("") || '<tr><td colspan="10" class="py-10 text-center text-slate-400">No applications found.</td></tr>';
+    '</select></td><td><input class="input min-w-24" data-field="admit_roll" value="'+esc(a.admit_roll||"")+'" placeholder="Roll No."></td><td><label class="flex items-center gap-2 text-sm"><input type="checkbox" data-field="admit_card_enabled" '+(a.admit_card_enabled?'checked':'')+'> Enabled</label></td><td><input class="input min-w-36" data-field="admin_note" value="'+esc(a.admin_note||"")+'" placeholder="Note"></td><td><button class="btn-primary btn-sm" data-save="'+esc(a.id)+'">Save</button></td><td><div class="flex flex-wrap gap-2"><button type="button" class="btn-secondary btn-sm" data-print-application="'+esc(a.id)+'">Application Form</button><button type="button" class="btn-secondary btn-sm" data-print-admit="'+esc(a.id)+'">Admit Card</button></div></td><td><button type="button" class="btn-danger btn-sm" data-delete-application="'+esc(a.id)+'">Delete</button></td></tr>').join("") || '<tr><td colspan="10" class="py-10 text-center text-slate-400">No applications found.</td></tr>';
 }
 
 function printWindow(kind, markup) {
@@ -209,16 +209,25 @@ $("#academicYearForm").addEventListener("submit",async e=>{
 $("#academicYearRows").addEventListener("click",async e=>{
     const toggle=e.target.closest("[data-year-toggle]");
     const del=e.target.closest("[data-year-delete]");
+    if(!toggle&&!del)return;
+    const button=toggle||del;
+    const year=toggle?toggle.dataset.yearToggle:del.dataset.yearDelete;
     try{
+        if(del&&!confirm("Permanently delete academic year "+year+"? This is only allowed when no applications are linked to it."))return;
+        button.disabled=true;
+        button.textContent=del?"Deleting...":(toggle.dataset.active==="true"?"Activating...":"Deactivating...");
         if(toggle){
-            await call("/api/admin/website/academic-years/"+encodeURIComponent(toggle.dataset.year),{method:"PUT",json:{active:toggle.dataset.active==="true"}});
-            message($("#academicYearMessage"),"Academic year status updated.");await refreshAcademicYears();
-        }else if(del){
-            if(!confirm("Delete academic year "+del.dataset.year+"?"))return;
-            await call("/api/admin/website/academic-years/"+encodeURIComponent(del.dataset.year),{method:"DELETE"});
-            message($("#academicYearMessage"),"Academic year deleted.");await refreshAcademicYears();
+            await call("/api/admin/website/academic-years/"+encodeURIComponent(year),{method:"PUT",json:{active:toggle.dataset.active==="true"}});
+            message($("#academicYearMessage"),"Academic year status updated successfully.");
+        }else{
+            await call("/api/admin/website/academic-years/"+encodeURIComponent(year),{method:"DELETE"});
+            message($("#academicYearMessage"),"Academic year deleted successfully.");
         }
-    }catch(err){message($("#academicYearMessage"),err.message,true);}
+        await refreshAcademicYears();
+    }catch(err){
+        message($("#academicYearMessage"),err.message,true);
+        await refreshAcademicYears().catch(()=>{});
+    }
 });
 App.shell("admissions").then(async user => {
     if (!user) return;
