@@ -46,6 +46,10 @@ router.get("/api/academic-years", publicLimiter, async (req, res) => {
 
 // Public application form. A separate atomic sequence is shared across all classes within each academic year.
 router.post("/api/admission", publicLimiter, async (req, res) => {
+    const admissionOpen = await db.one("SELECT value FROM site_settings WHERE key='admission_open'");
+    if (admissionOpen && admissionOpen.value === "false") {
+        return res.status(403).json({ success:false, message:"বর্তমানে অনলাইন ভর্তি আবেদন গ্রহণ বন্ধ রয়েছে। ভর্তি কার্যক্রম চালু হলে আবার আবেদন করতে পারবেন।" });
+    }
     const body = req.body || {};
     const studentName = clean(body.student_name, 160);
     const className = clean(body.class_name, 60);
