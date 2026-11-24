@@ -118,6 +118,7 @@ $("#settingsForm").addEventListener("submit", async (event) => {
     try {
         data.logo_url = await upload(form.elements.logo_file.files[0]) || data.logo_url || "";
         data.hero_image_url = await upload(form.elements.hero_file.files[0]) || data.hero_image_url || "";
+        data.principal_photo_url = await upload(form.elements.principal_photo_file.files[0]) || data.principal_photo_url || "";
         delete data.logo_file;
         delete data.hero_file;
         const result = await api("/api/admin/website/settings", {
