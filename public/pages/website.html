@@ -55,6 +55,23 @@
                 <label class="label">YouTube URL<input class="input mt-1 normal-case tracking-normal" name="youtube_url"></label>
                 <label class="label">Logo Image<input class="input mt-1 normal-case tracking-normal" type="file" name="logo_file" accept="image/*"></label>
                 <label class="label">Hero Banner Image<input class="input mt-1 normal-case tracking-normal" type="file" name="hero_file" accept="image/*"></label>
+                <div class="rounded-xl border border-brand-100 bg-brand-50/40 p-4 space-y-3 sm:col-span-2 lg:col-span-3">
+                    <h3 class="font-bold text-slate-800">Online Admission Section</h3>
+                    <label class="label">Show Online Admission on Homepage
+                        <select class="input mt-1" name="admission_open"><option value="true">ON — Show admission section</option><option value="false">OFF — Hide admission section and pause applications</option></select>
+                    </label>
+                    <div class="grid gap-3 sm:grid-cols-2 items-end">
+                        <label class="label">Admission Section Photo (JPG, PNG, WEBP or GIF)
+                            <input class="input mt-1 normal-case tracking-normal" type="file" name="admission_section_image_file" accept="image/jpeg,image/png,image/webp,image/gif">
+                        </label>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <img id="admissionSectionPhotoPreview" src="" alt="Admission section photo preview" class="hidden h-24 w-40 rounded-lg border border-slate-200 object-cover">
+                            <button type="button" id="removeAdmissionSectionPhoto" class="btn-danger btn-sm">Remove Photo</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="admission_section_image_url">
+                    <p class="text-xs text-slate-500">Turn admission ON only while applications are being accepted. The uploaded photo appears in the right-hand panel of the homepage.</p>
+                </div>
                 <div class="space-y-2"><label class="label">Head Teacher Photo (Nurul Islam)<input class="input mt-1 normal-case tracking-normal" type="file" name="principal_photo_file" accept="image/jpeg,image/png,image/webp"></label><p class="text-xs text-slate-500">Upload JPG, PNG or WEBP. This photo appears beside the Head Teacher’s name on the homepage.</p><img id="principalPhotoPreview" src="" alt="Current Head Teacher photo" class="hidden h-28 w-24 rounded-lg border border-slate-200 object-cover object-top shadow-sm"></div>
                 <input type="hidden" name="principal_photo_url">
             </div>
