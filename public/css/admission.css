@@ -575,3 +575,56 @@
   font-size:5.8pt!important;line-height:1.1!important;
  }
 }
+
+
+/* Balanced A4 spacing: remove the artificial signature gap and distribute sections inside the border. */
+@media print{
+ body.printing-admission #printSheet .print-page{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  align-items:stretch!important;
+  height:285mm!important;
+  min-height:285mm!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  padding:4mm 5mm 3mm!important;
+ }
+ body.printing-admission #printSheet .print-signatures{
+  margin:0!important;
+  padding:3mm 0 0!important;
+  flex:0 0 auto!important;
+  gap:5mm!important;
+ }
+ body.printing-admission #printSheet .print-signatures div{
+  margin:0!important;
+  padding:1.5mm .5mm 0!important;
+  min-height:7mm!important;
+ }
+ body.printing-admission #printSheet .print-foot{
+  margin:0!important;
+  padding:1mm 0 0!important;
+  flex:0 0 auto!important;
+ }
+ body.printing-admission #printSheet .print-declaration{
+  margin:0!important;
+  flex:0 0 auto!important;
+ }
+ body.printing-admission #printSheet .print-section{
+  margin:0!important;
+  padding:1.2mm 1.8mm!important;
+ }
+ body.printing-admission #printSheet .print-field{
+  min-height:7mm!important;
+  padding:.8mm 1.1mm!important;
+ }
+ body.printing-admission #printSheet .print-head{
+  padding-bottom:2mm!important;
+ }
+ body.printing-admission #printSheet .print-title{
+  margin:1mm auto!important;
+ }
+ body.printing-admission #printSheet .print-meta{
+  margin:0!important;
+ }
+}
