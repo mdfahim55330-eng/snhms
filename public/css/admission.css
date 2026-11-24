@@ -406,3 +406,59 @@
   }
   body.printing-admission #printSheet .print-foot{bottom:2mm!important;}
 }
+
+
+/* Full-page A4 admission application form layout (final override). */
+@page{size:A4 portrait;margin:10mm}
+@media print{
+ html,body{width:190mm!important;min-height:277mm!important;margin:0!important;padding:0!important;background:#fff!important}
+ body.printing-admission #printSheet{
+  display:block!important;visibility:visible!important;position:static!important;
+  width:190mm!important;min-height:277mm!important;margin:0!important;padding:0!important;
+ }
+ body.printing-admission #printSheet .print-page{
+  display:flex!important;flex-direction:column!important;box-sizing:border-box!important;
+  width:190mm!important;height:277mm!important;min-height:277mm!important;
+  margin:0!important;padding:7mm 8mm 10mm!important;overflow:hidden!important;
+  border:1.1px solid #244b63!important;border-radius:2mm!important;
+  font-size:9pt!important;line-height:1.35!important;box-shadow:none!important;
+  break-inside:avoid!important;page-break-after:avoid!important;
+ }
+ body.printing-admission #printSheet .print-head{
+  grid-template-columns:23mm minmax(0,1fr) 18mm!important;gap:4mm!important;
+  padding:3mm 0 4mm!important;
+ }
+ body.printing-admission #printSheet .print-logo{width:21mm!important;height:21mm!important}
+ body.printing-admission #printSheet .print-head h1{font-size:17pt!important}
+ body.printing-admission #printSheet .print-head p{font-size:8pt!important;margin:.7mm 0!important}
+ body.printing-admission #printSheet .print-title{
+  margin:4mm auto 3mm!important;padding:1.7mm 12mm!important;font-size:12pt!important;
+ }
+ body.printing-admission #printSheet .print-meta{gap:2mm!important;margin:0 0 3mm!important}
+ body.printing-admission #printSheet .print-meta span{padding:2.2mm 2.5mm!important;font-size:8pt!important}
+ body.printing-admission #printSheet .print-section{
+  margin:3mm 0 1.8mm!important;padding:2mm 3mm!important;font-size:9pt!important;
+ }
+ body.printing-admission #printSheet .print-grid{
+  grid-template-columns:minmax(0,1fr) 27mm!important;gap:4mm!important;
+ }
+ body.printing-admission #printSheet .print-fields{gap:2mm 4mm!important}
+ body.printing-admission #printSheet .print-field{
+  min-height:9mm!important;padding:1.6mm 2.2mm!important;font-size:9pt!important;
+ }
+ body.printing-admission #printSheet .print-field b{font-size:7pt!important;margin-bottom:.5mm!important}
+ body.printing-admission #printSheet .photo-box{height:34mm!important}
+ body.printing-admission #printSheet .print-declaration{
+  margin:5mm 0 0!important;padding:3mm 3.5mm!important;font-size:8pt!important;line-height:1.55!important;
+ }
+ body.printing-admission #printSheet .print-signatures{
+  position:absolute!important;left:8mm!important;right:8mm!important;bottom:13mm!important;
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10mm!important;margin:0!important;padding:0!important;
+ }
+ body.printing-admission #printSheet .print-signatures div{
+  min-height:12mm!important;height:12mm!important;padding:2mm 1mm 0!important;
+  font-size:8pt!important;line-height:1.3!important;
+ }
+ body.printing-admission #printSheet .print-foot{left:8mm!important;right:8mm!important;bottom:3mm!important}
+}
