@@ -111,6 +111,17 @@ router.put("/website/admissions/:id",async(req,res)=>{
  await audit.log(req,"admission_updated","site_admissions",req.params.id,"Updated admission review");
  res.json({success:true,item:result.rows[0]});
 });
+router.delete("/website/admissions/:id",async(req,res)=>{
+ const id=String(req.params.id||"");
+ if(!/^\\d+$/.test(id)||Number(id)<1)return res.status(400).json({success:false,message:"Invalid application ID."});
+ const application=await db.one("SELECT id,application_no,student_name,academic_year FROM site_admissions WHERE id=?",[id]);
+ if(!application)return res.status(404).json({success:false,message:"Admission application not found."});
+ await db.query("DELETE FROM site_admissions WHERE id=?",[id]);
+ await audit.log(req,"admission_deleted","site_admissions",id,"Deleted admission application "+application.application_no,{
+  application_no:application.application_no,student_name:application.student_name,academic_year:application.academic_year
+ });
+ res.json({success:true,message:"Admission application deleted successfully."});
+});
 router.get("/website/messages",async(req,res)=>res.json({success:true,items:await db.all("SELECT * FROM site_messages ORDER BY id DESC")}));
 router.put("/website/messages/:id/read",async(req,res)=>{
  await db.query("UPDATE site_messages SET read_at=now() WHERE id=?",[req.params.id]);
